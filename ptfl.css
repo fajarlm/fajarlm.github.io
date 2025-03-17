@@ -110,7 +110,7 @@ header {
 }
 
 .home {
-    height: 100vh;
+    height: 90vh;
     display: flex;
     padding: 0 10%;
     align-items: center;
@@ -428,7 +428,7 @@ header {
 }
 
 #Project {
-    height: 70vw;
+    height: 110vw;
     background: rgb(0, 212, 255);
     background: linear-gradient(180deg, rgba(0, 212, 255, 1) 5%, rgba(4, 14, 48, 1) 11%, rgba(11, 30, 97, 1) 90%, rgba(0, 0, 0, 1) 96%);
     padding-top: 5%;
@@ -527,6 +527,12 @@ header {
     margin-top: 10px;
     font-size: 70px;
     color: #0554ff;
+}
+
+.project-Bos{
+    margin-top: 10px;
+    font-size: 70px;
+    color: #9900ff;
 }
 
 .project-js {
