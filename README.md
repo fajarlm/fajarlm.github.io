@@ -2,12 +2,11 @@
 
 Website portofolio pribadi yang dibuat untuk menampilkan profil, skill, dan project yang pernah saya kerjakan sebagai developer.
 
-## 📌 Features
+## 📌 Menu
 - About Me – Informasi singkat tentang diri saya
 - Skills – Teknologi yang saya kuasai
 - Projects – Beberapa project yang pernah saya buat
 - Contact – Cara untuk menghubungi saya
-- Responsive Design – Tampilan menyesuaikan berbagai ukuran layar
 
 ## ⚛️ Technologies Used
 Website ini dibuat menggunakan teknologi berikut:
@@ -16,6 +15,7 @@ Website ini dibuat menggunakan teknologi berikut:
 - JavaScript
 - Tailwind CSS
 - HTML & CSS
+- GSAP ( Animation )
 
 ## 📁 Project Structure
 ```
@@ -39,4 +39,4 @@ GitHub : https://github.com/fajarlm
 
 ## Deploy Website
 
-  https://github.com/portofolio-jar.vercel.app
+  https://portofolio-jar.vercel.app
