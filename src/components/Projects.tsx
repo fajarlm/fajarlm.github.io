@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { projectsData, translations } from '../data/portfolioData';
 import { Globe, ExternalLink, ChevronLeft, ChevronRight, X, Image as ImageIcon } from 'lucide-react';
+import SpotlightCard from './ui/SpotlightCard';
 import AOS from 'aos';
 import type { Language } from '../types';
 
@@ -62,9 +63,9 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
           {currentItems.map((p) => (
-            <div key={p.id} className="group card-minimal rounded-[2.5rem] overflow-hidden p-4 shadow-sm hover:shadow-xl transition-all duration-500 h-full flex flex-col" data-aos="fade-up">
+            <SpotlightCard key={p.id} className="group card-minimal rounded-[2.5rem] p-4 shadow-sm hover:shadow-xl transition-all duration-500 h-full flex flex-col" spotlightColor="rgba(120, 120, 120, 0.1)">
               <div 
-                className="relative overflow-hidden rounded-2xl aspect-video mb-6 cursor-zoom-in group/img"
+                className="relative overflow-hidden rounded-2xl aspect-video mb-6 cursor-zoom-in group/img z-10"
                 onClick={() => setSelectedGallery([p.img, ...(p.gallery || [])])}
               >
                 <img src={p.img} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
@@ -78,7 +79,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                 </div>
               </div>
 
-              <div className="px-2 flex flex-col flex-grow">
+              <div className="px-2 flex flex-col flex-grow z-10">
                 <h4 className="text-lg md:text-xl font-bold mb-2 tracking-tight leading-tight">{p.title}</h4>
                 <p className="text-[11px] text-[var(--text-muted)] mb-6 line-clamp-2 leading-relaxed italic opacity-80">{p.description[lang]}</p>
                 
@@ -101,7 +102,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                   )}
                 </div>
               </div>
-            </div>
+            </SpotlightCard>
           ))}
         </div>
 

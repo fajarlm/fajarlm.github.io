@@ -1,4 +1,4 @@
-import { Mail, Send, ArrowRight, Globe, User, Phone, CheckCircle2, Copy } from 'lucide-react';
+import { Mail, Send, ArrowRight, CheckCircle2, Copy, Globe, User, Camera, Phone } from 'lucide-react';
 import { socialLinks, translations } from '../data/portfolioData';
 import { useState } from 'react';
 import type { Language } from '../types';
@@ -47,13 +47,16 @@ const Contact: React.FC<ContactProps> = ({ lang }) => {
           <div className="space-y-4">
             <p className="text-xs font-bold uppercase tracking-widest opacity-30">{t.social}</p>
             <div className="flex flex-col gap-4 font-bold text-lg text-nowrap">
-              <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="hover:accent-text transition-all w-max flex items-center gap-3 group">
+              <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="hover:text-[#333] dark:hover:text-white transition-all w-max flex items-center gap-3 group">
                 <Globe size={18} /> GitHub <ArrowRight size={16} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
               </a>
-              <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="hover:accent-text transition-all w-max flex items-center gap-3 group">
+              <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-[#0077B5] transition-all w-max flex items-center gap-3 group">
                 <User size={18} /> LinkedIn <ArrowRight size={16} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
               </a>
-              <a href={socialLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="hover:accent-text transition-all w-max flex items-center gap-3 group text-emerald-600">
+              <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-[#E1306C] transition-all w-max flex items-center gap-3 group">
+                <Camera size={18} /> Instagram <ArrowRight size={16} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+              </a>
+              <a href={socialLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="hover:text-[#25D366] transition-all w-max flex items-center gap-3 group">
                 <Phone size={18} /> WhatsApp <ArrowRight size={16} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
               </a>
             </div>

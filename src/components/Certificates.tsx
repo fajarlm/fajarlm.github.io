@@ -11,6 +11,7 @@ interface CertificatesProps {
 const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [animDir, setAnimDir] = useState('fade-up');
   const itemsPerPage = 6;
   const t = translations[lang].certificates;
 
@@ -37,8 +38,8 @@ const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {currentItems.map((cert, i) => (
             <div 
-              key={cert.id} 
-              data-aos="fade-up" 
+              key={`${cert.id}-${currentPage}`} 
+              data-aos={animDir} 
               data-aos-delay={i * 50}
               onClick={() => setSelectedFile(cert.file)}
               className="group card-minimal rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-[var(--text)] transition-all duration-500 shadow-sm hover:shadow-xl relative overflow-hidden cursor-pointer bg-white dark:bg-zinc-900/20"
@@ -67,7 +68,10 @@ const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
           <div className="mt-20 flex justify-center items-center gap-8">
             <button 
               disabled={currentPage === 1} 
-              onClick={() => setCurrentPage(p => p - 1)} 
+              onClick={() => {
+                setAnimDir('fade-right');
+                setCurrentPage(p => p - 1);
+              }} 
               className="p-4 rounded-full border border-[var(--border)] hover:border-[var(--text)] disabled:opacity-20 transition-all shadow-sm group bg-[var(--card)]"
             >
               <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -77,7 +81,10 @@ const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
               {[...Array(totalPages)].map((_, i) => (
                 <button 
                   key={i} 
-                  onClick={() => setCurrentPage(i + 1)} 
+                  onClick={() => {
+                    setAnimDir(i + 1 > currentPage ? 'fade-left' : 'fade-right');
+                    setCurrentPage(i + 1);
+                  }} 
                   className={`w-2 h-2 rounded-full transition-all ${currentPage === i + 1 ? 'bg-[var(--text)] scale-150 shadow-md' : 'bg-[var(--border)] hover:bg-[var(--text-muted)]'}`} 
                 />
               ))}
@@ -85,7 +92,10 @@ const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
 
             <button 
               disabled={currentPage === totalPages} 
-              onClick={() => setCurrentPage(p => p + 1)} 
+              onClick={() => {
+                setAnimDir('fade-left');
+                setCurrentPage(p => p + 1);
+              }} 
               className="p-4 rounded-full border border-[var(--border)] hover:border-[var(--text)] disabled:opacity-20 transition-all shadow-sm group bg-[var(--card)]"
             >
               <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />

@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import Hero from './components/Hero';
 import About from './components/About';
+import Experience from './components/Experience';
 import TechStack from './components/TechStack';
 import Projects from './components/Projects';
 import Certificates from './components/Certificates';
@@ -16,7 +17,10 @@ import Footer from './components/Footer';
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme) || 'light');
-  const [lang, setLang] = useState<Language>((localStorage.getItem('lang') as Language) || 'en');
+  const [lang, setLang] = useState<Language>(() => {
+    const saved = localStorage.getItem('lang');
+    return (saved === 'en' || saved === 'id') ? (saved as Language) : 'en';
+  });
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -56,6 +60,7 @@ export default function App() {
         <main className="flex-grow">
           <Hero lang={lang} />
           <About lang={lang} />
+          <Experience lang={lang} />
           
           <div className="px-6 md:px-12 lg:px-24">
             <TechStack lang={lang} />

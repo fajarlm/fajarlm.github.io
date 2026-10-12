@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Language } from '../types';
 import { translations } from '../data/portfolioData';
 import { Button } from './ui/button';
+import cvFile from '../assets/CV Fajar Kusuma .pdf';
 
 interface AboutProps {
   lang: Language;
@@ -14,7 +15,7 @@ const About: React.FC<AboutProps> = ({ lang }) => {
   return (
     <section id="tentang" className="py-24 md:py-32 px-6 relative">
       <div className="container mx-auto max-w-5xl">
-        <div className=" gap-12 lg:gap-20 items-start">
+        <div className="gap-12 lg:gap-20 items-start">
 
           <div data-aos="fade-up" data-aos-delay="100">
             <div className="text-center lg:text-left mb-10">
@@ -23,9 +24,14 @@ const About: React.FC<AboutProps> = ({ lang }) => {
               <p className="text-sm md:text-base text-[var(--text)] opacity-60 leading-relaxed font-medium">
                 {t.desc}
               </p>
-              <Button variant="outline" size="lg" className="mt-6">
-                {lang === 'en' ? 'Download CV' : 'Unduh CV'}
-              </Button>
+              <a
+                href={cvFile}
+                download="CV-Fajar-Kusuma.pdf"
+              >
+                <Button size="lg" className="mt-6 bg-[var(--text)] text-[var(--bg)] hover:bg-[var(--accent)] hover:text-white hover:scale-105 active:scale-95 transition-all shadow-xl hover:shadow-2xl font-bold px-8 py-6 rounded-full">
+                  {lang === 'en' ? 'Download CV' : 'Unduh CV'}
+                </Button>
+              </a>
             </div>
 
             <div className="flex justify-center lg:justify-start gap-4 md:gap-8 mb-4">
@@ -51,7 +57,7 @@ const About: React.FC<AboutProps> = ({ lang }) => {
                   </div>
                   <div>
                     <p className="text-[9px] uppercase opacity-30 mb-1 tracking-widest font-bold text-nowrap">{lang === 'en' ? 'Availability' : 'Status'}</p>
-                    <p className="text-sm font-bold text-blue-950 uppercase tracking-tighter text-nowrap">{lang === 'en' ? 'Open to Work' : 'Terbuka untuk Magang & Posisi Junior'}</p>
+                    <p className="availability-badge text-nowrap">{lang === 'en' ? 'Open to Work' : 'Terbuka untuk Magang & Posisi Junior'}</p>
                   </div>
                   <div className="sm:col-span-2">
                     <p className="text-[9px] uppercase opacity-30 mb-1 tracking-widest font-bold text-nowrap">{lang === 'en' ? 'Correspondence' : 'Korespondensi'}</p>

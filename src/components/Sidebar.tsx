@@ -15,6 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, lang }) => {
   const menuItems = [
     { name: lang === 'en' ? 'Home' : 'Beranda', id: 'home' },
     { name: t.about, id: 'tentang' },
+    { name: lang === 'en' ? 'Experience' : 'Pengalaman', id: 'pengalaman' },
     { name: lang === 'en' ? 'Skills' : 'Keahlian', id: 'keahlian' },
     { name: t.projects, id: 'proyek' },
     { name: t.certificates, id: 'sertifikat' },

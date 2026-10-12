@@ -58,8 +58,8 @@ export const projectsData: Project[] = [
     id: 2, 
     title: 'Digital Attendance System', 
     description: {
-      en: 'attendances system for employees with real-time .',
-      id: 'Sistem absensi untuk karyawan dengan  real-time.'
+      en: 'A digital attendance system for employees featuring real-time tracking.',
+      id: 'Sistem absensi digital untuk karyawan dengan fitur pelacakan real-time.'
     },
     type: 'web', 
     tech: ['tailwind', 'MySQL', 'Laravel'], 
@@ -98,22 +98,22 @@ export const socialLinks = {
 export const translations = {
   en: {
     nav: { about: 'About', projects: 'Projects', certificates: 'Certificates', contact: 'Contact' },
-    hero: { role: 'Fullstack Developer', tagline: 'Hi! I am fajar, a Fullstack Developer passionate about building modern web applications technologies. Feel free to reach out via email or connect with me on LinkedIn and GitHub!.' },
-    about: { title: 'Crafting digital experiences with purpose.', desc: 'I am a passionate software engineering student focused on building high-performance web and mobile applications that put users first.' },
-    tech: { title: 'Tech &', subtitle: 'stack.' },
+    hero: { role: 'Fullstack Developer', tagline: 'Hi! I\'m Fajar, a Fullstack Developer passionate about building modern web applications. Feel free to reach out via email or connect with me on LinkedIn and GitHub!' },
+    about: { title: 'Crafting digital experiences with purpose.', desc: 'I am a passionate software engineering student focused on building high-performance web and mobile applications that prioritize user experience.' },
+    tech: { title: 'Tech &', subtitle: 'Tools.' },
     projects: { title: 'Featured', subtitle: 'Projects.', filterAll: 'All' },
-    certificates: { title: 'Proof of', subtitle: 'Competence.' },
-    contact: { title: 'MY', subtitle: 'CONTACT.', available: 'Open for new opportunities', social: 'Social Links', send: 'Send Message' },
+    certificates: { title: 'Proof of', subtitle: 'Excellence.' },
+    contact: { title: 'GET IN', subtitle: 'TOUCH.', available: 'Open for new opportunities', social: 'Connect with me', send: 'Send Message' },
     footer: { copyright: '© 2024 Fajar Kusuma. All rights reserved.' }
   },
   id: {
     nav: { about: 'Tentang', projects: 'Proyek', certificates: 'Sertifikat', contact: 'Kontak' },
-    hero: {  role: 'Pengembang Fullstack', tagline: 'Hai! Saya Fajar, seorang Fullstack Developer yang bersemangat membangun teknologi aplikasi web modern. Jangan ragu untuk menghubungi saya melalui email atau terhubung dengan saya di LinkedIn dan GitHub!.' },
-    about: { title: 'Membangun pengalaman digital yang bermakna.', desc: 'Saya adalah siswa pengembangan perangkat lunak yang bersemangat, berfokus pada pembuatan aplikasi web dan mobile berperforma tinggi dengan mengutamakan kebutuhan pengguna.' },
-    tech: { title: 'Alat &', subtitle: 'Teknologi.' },
-    projects: { title: 'Proyek', subtitle: 'Ku .', filterAll: 'Semua' },
-    certificates: { title: 'Sertifikat', subtitle: '.' },
-    contact: { title: 'KONTAK', subtitle: 'SAYA.', available: 'Terbuka untuk peluang baru', social: 'Media Sosial', send: 'Kirim Pesan' },
+    hero: { role: 'Fullstack Developer', tagline: 'Halo! Saya Fajar, seorang Fullstack Developer yang antusias dalam membangun aplikasi web modern. Jangan ragu untuk menghubungi saya melalui email atau terhubung via LinkedIn dan GitHub!' },
+    about: { title: 'Menciptakan pengalaman digital yang bermakna.', desc: 'Saya adalah siswa rekayasa perangkat lunak yang berfokus pada pembuatan aplikasi web dan mobile berkinerja tinggi yang mengutamakan pengalaman pengguna.' },
+    tech: { title: 'Teknologi &', subtitle: 'Alat.' },
+    projects: { title: 'Proyek', subtitle: 'Unggulan.', filterAll: 'Semua' },
+    certificates: { title: 'Bukti', subtitle: 'Kompetensi.' },
+    contact: { title: 'HUBUNGI', subtitle: 'SAYA.', available: 'Terbuka untuk peluang baru', social: 'Mari Terhubung', send: 'Kirim Pesan' },
     footer: { copyright: '© 2024 Fajar Kusuma. Hak cipta dilindungi.' }
   }
 };
