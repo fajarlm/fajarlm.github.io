@@ -24,5 +24,14 @@ export interface Certificate {
   file: string;
 }
 
+export interface ExperienceItem {
+  role: { en: string; id: string };
+  company: string;
+  companyUrl?: string;
+  period: { en: string; id: string };
+  type: { en: string; id: string };
+  points: { en: string[]; id: string[] };
+}
+
 export type Theme = 'light' | 'dark' | 'cyan';
 export type Language = 'en' | 'id';

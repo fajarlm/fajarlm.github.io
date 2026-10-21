@@ -1,4 +1,4 @@
-import type { Skill, Project, Certificate } from '../types';
+import type { Skill, Project, Certificate, ExperienceItem } from '../types';
 import quranic from '../assets/projects/quranic.png';
 import atten from '../assets/projects/attendances.png';
 
@@ -19,16 +19,16 @@ import certFajar3 from '../assets/sertifikat/Fajar_kusuma-12410279.pdf';
 import certCourse from '../assets/sertifikat/sertifikat_course_123_4363478_230125134956.pdf';
 
 export const techStack: Skill[] = [
-  { name: 'HTML5', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg', desc: { en: 'Semantic Web Architecture', id: 'Arsitektur Web Semantik' } },
-  { name: 'CSS3', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg', desc: { en: 'Responsive & Modern UI Implementation', id: 'Implementasi UI Modern & Responsif' } },
-  { name: 'JavaScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg', desc: { en: 'Client-side Logic & DOM Manipulation', id: 'Logika Sisi Klien & Manipulasi DOM' } },
-  { name: 'PHP', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg', desc: { en: 'Server-side Scripting & Logic', id: 'Logika & Scripting Sisi Server' } },
-  { name: 'Laravel', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg', desc: { en: 'Scalable Backend Development (PHP)', id: 'Pengembangan Backend Skalabel (PHP)' } },
+  { name: 'HTML5', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg', desc: { en: 'Markup & Page Structure', id: 'Markup & Struktur Halaman' } },
+  { name: 'CSS3', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg', desc: { en: 'Styling & Responsive Layout', id: 'Styling & Layout Responsif' } },
+  { name: 'JavaScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg', desc: { en: 'Interactivity & Logic', id: 'Interaktivitas & Logika' } },
+  { name: 'PHP', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg', desc: { en: 'Backend Logic', id: 'Logika Backend' } },
+  { name: 'Laravel', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg', desc: { en: 'PHP Web Framework', id: 'Framework Web PHP' } },
   { name: 'Next.js', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg', desc: { en: 'Fullstack React Framework', id: 'Framework React Fullstack' } },
-  { name: 'React', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg', desc: { en: 'Component-Based UI Engineering', id: 'Rekayasa UI Berbasis Komponen' } },
-  { name: 'Tailwind', icon: 'https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg', desc: { en: 'Efficient Utility-First Styling', id: 'Styling Efisien Berbasis Utility' } },
-  { name: 'Bootstrap', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg', desc: { en: 'Rapid UI Development Framework', id: 'Framework Pengembangan UI Cepat' } },
-  { name: 'Prisma', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg', desc: { en: 'Modern Type-safe ORM', id: 'ORM Modern Berbasis Type-safe' } },
+  { name: 'React', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg', desc: { en: 'UI Components & SPA', id: 'Komponen UI & SPA' } },
+  { name: 'Tailwind', icon: 'https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg', desc: { en: 'Utility-First CSS', id: 'CSS Berbasis Utility' } },
+  { name: 'Bootstrap', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg', desc: { en: 'CSS Component Library', id: 'Library Komponen CSS' } },
+  { name: 'Prisma', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg', desc: { en: 'Database ORM for Node.js', id: 'ORM Database untuk Node.js' } },
   { name: 'MySQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg', desc: { en: 'Relational Database Management', id: 'Manajemen Database Relasional' } },
   { name: 'PostgreSQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg', desc: { en: 'Advanced Relational Database', id: 'Database Relasional Tingkat Lanjut' } },
   { name: 'MongoDB', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg', desc: { en: 'NoSQL Document Database', id: 'Database NoSQL Berbasis Dokumen' } },
@@ -88,6 +88,43 @@ export const certificatesData: Certificate[] = [
   { id: 14, title: 'Fullstack Web Development Course', issuer: 'Online Learning Platform', date: '2024', file: certCourse }
 ];
 
+export const experiencesData: ExperienceItem[] = [
+  {
+    role: { en: 'Frontend Developer (Internship)', id: 'Frontend Developer (Magang)' },
+    company: 'PT. Surya Manggala Informatika',
+    period: { en: 'Jul 2025 - Dec 2025', id: 'Jul 2025 - Des 2025' },
+    type: { en: 'Hybrid - Internship', id: 'Hybrid - Magang' },
+    points: {
+      en: [
+        'Built and maintained modular Vue 3 components using the Composition API and TypeScript.',
+        'Implemented UI localization (i18n) across multiple modules for EN/ID support.',
+      ],
+      id: [
+        'Membangun dan memelihara komponen Vue 3 modular menggunakan Composition API dan TypeScript.',
+        'Mengimplementasikan lokalisasi UI (i18n) pada berbagai modul untuk dukungan EN/ID.',
+      ],
+    },
+  },
+  {
+    role: { en: 'Fullstack Web Developer (Freelance)', id: 'Fullstack Web Developer (Freelance)' },
+    company: 'Independent',
+    period: { en: '2024 - Present', id: '2024 - Sekarang' },
+    type: { en: 'Remote - Freelance', id: 'Remote - Freelance' },
+    points: {
+      en: [
+        'Developed custom web applications using Laravel, Next.js, and React for various clients.',
+        'Designed and implemented responsive UIs with Tailwind CSS and component libraries.',
+        'Deployed applications on VPS, Vercel, and managed MySQL/PostgreSQL databases.',
+      ],
+      id: [
+        'Membangun aplikasi web kustom menggunakan Laravel, Next.js, dan React untuk berbagai klien.',
+        'Merancang dan mengimplementasikan UI responsif dengan Tailwind CSS dan library komponen.',
+        'Men-deploy aplikasi di VPS, Vercel, dan mengelola database MySQL/PostgreSQL.',
+      ],
+    },
+  },
+];
+
 export const socialLinks = {
   github: "https://github.com/fajarlm",
   linkedin: "https://www.linkedin.com/in/fajar-kusuma-2f88/",
@@ -98,22 +135,22 @@ export const socialLinks = {
 export const translations = {
   en: {
     nav: { about: 'About', projects: 'Projects', certificates: 'Certificates', contact: 'Contact' },
-    hero: { role: 'Fullstack Developer', tagline: 'Hi! I\'m Fajar, a Fullstack Developer passionate about building modern web applications. Feel free to reach out via email or connect with me on LinkedIn and GitHub!' },
-    about: { title: 'Crafting digital experiences with purpose.', desc: 'I am a passionate software engineering student focused on building high-performance web and mobile applications that prioritize user experience.' },
+    hero: { role: 'Fullstack Developer', tagline: 'Hi, I\'m Fajar — I build web apps from front to back. Currently a vocational student at SMK Wikrama focused on real-world projects. Let\'s connect!' },
+    about: { title: 'A bit about me.', desc: 'I\'m a Software Engineering student at SMK Wikrama Bogor. I enjoy turning ideas into working products — mostly with Laravel, React, and Next.js. Outside of class, I take on freelance projects and constantly learn new tools.' },
     tech: { title: 'Tech &', subtitle: 'Tools.' },
-    projects: { title: 'Featured', subtitle: 'Projects.', filterAll: 'All' },
-    certificates: { title: 'Proof of', subtitle: 'Excellence.' },
-    contact: { title: 'GET IN', subtitle: 'TOUCH.', available: 'Open for new opportunities', social: 'Connect with me', send: 'Send Message' },
+    projects: { title: 'My', subtitle: 'Projects.', filterAll: 'All' },
+    certificates: { title: 'My', subtitle: 'Certificates.' },
+    contact: { title: 'GET IN', subtitle: 'TOUCH.', available: 'Available for internship & junior positions', social: 'Find me on', send: 'Send Message' },
     footer: { copyright: '© 2024 Fajar Kusuma. All rights reserved.' }
   },
   id: {
     nav: { about: 'Tentang', projects: 'Proyek', certificates: 'Sertifikat', contact: 'Kontak' },
-    hero: { role: 'Fullstack Developer', tagline: 'Halo! Saya Fajar, seorang Fullstack Developer yang antusias dalam membangun aplikasi web modern. Jangan ragu untuk menghubungi saya melalui email atau terhubung via LinkedIn dan GitHub!' },
-    about: { title: 'Menciptakan pengalaman digital yang bermakna.', desc: 'Saya adalah siswa rekayasa perangkat lunak yang berfokus pada pembuatan aplikasi web dan mobile berkinerja tinggi yang mengutamakan pengalaman pengguna.' },
+    hero: { role: 'Fullstack Developer', tagline: 'Halo, saya Fajar — saya membangun aplikasi web dari depan sampai belakang. Saat ini siswa SMK Wikrama yang fokus pada proyek nyata. Yuk terhubung!' },
+    about: { title: 'Sedikit tentang saya.', desc: 'Saya siswa Rekayasa Perangkat Lunak di SMK Wikrama Bogor. Saya suka mengubah ide menjadi produk nyata — terutama dengan Laravel, React, dan Next.js. Di luar jam sekolah, saya mengerjakan proyek freelance dan terus belajar hal baru.' },
     tech: { title: 'Teknologi &', subtitle: 'Alat.' },
-    projects: { title: 'Proyek', subtitle: 'Unggulan.', filterAll: 'Semua' },
-    certificates: { title: 'Bukti', subtitle: 'Kompetensi.' },
-    contact: { title: 'HUBUNGI', subtitle: 'SAYA.', available: 'Terbuka untuk peluang baru', social: 'Mari Terhubung', send: 'Kirim Pesan' },
+    projects: { title: 'Proyek', subtitle: 'Saya.', filterAll: 'Semua' },
+    certificates: { title: 'Sertifikat', subtitle: 'Saya.' },
+    contact: { title: 'HUBUNGI', subtitle: 'SAYA.', available: 'Tersedia untuk magang & posisi junior', social: 'Temukan saya di', send: 'Kirim Pesan' },
     footer: { copyright: '© 2024 Fajar Kusuma. Hak cipta dilindungi.' }
   }
 };

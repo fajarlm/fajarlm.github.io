@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Download } from 'lucide-react';
-import { translations } from '../data/portfolioData';
+import { translations, projectsData, certificatesData, experiencesData } from '../data/portfolioData';
 import imageProfil from '../assets/profil.png';
 import cvFile from '../assets/CV Fajar Kusuma .pdf';
 import StrokeText from './ui/StrokeText';
@@ -70,9 +70,9 @@ const Hero: React.FC<HeroProps> = ({ lang }) => {
             {/* stats */}
             <div className="grid grid-cols-3 gap-6 pt-10 border-t border-[var(--border)] max-w-sm">
               {[
-                { value: '2+', label: lang === 'en' ? 'Years Exp.' : 'Tahun Exp.' },
-                { value: '5+', label: lang === 'en' ? 'Projects' : 'Proyek' },
-                { value: '14+', label: lang === 'en' ? 'Certs' : 'Sertifikat' },
+                { value: `${experiencesData.length}+`, label: lang === 'en' ? 'Experience' : 'Pengalaman' },
+                { value: `${projectsData.length}+`, label: lang === 'en' ? 'Projects' : 'Proyek' },
+                { value: `${certificatesData.length}+`, label: lang === 'en' ? 'Certs' : 'Sertifikat' },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
                   <p className="text-3xl font-black tracking-tight accent-text">{stat.value}</p>
