@@ -96,7 +96,7 @@ export const experiencesData: ExperienceItem[] = [
     type: { en: 'Hybrid - Internship', id: 'Hybrid - Magang' },
     points: {
       en: [
-        'Built and maintained modular Vue 3 components using the Composition API and TypeScript.',
+        'Built and maintained modular Vue 3 components using the Composition API .',
         'Implemented UI localization (i18n) across multiple modules for EN/ID support.',
       ],
       id: [
