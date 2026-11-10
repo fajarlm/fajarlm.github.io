@@ -3,6 +3,8 @@ import quranic from '../assets/projects/quranic.png';
 import atten from '../assets/projects/attendances.png';
 import wishoraImg from '../assets/projects/wishora.png';
 import wishoraDoc from '../assets/projects/wishora-doc.png';
+import monetaImg from '../assets/projects/moneta.png';
+import monetaDoc from '../assets/projects/moneta-doc.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -54,8 +56,22 @@ export const projectsData: Project[] = [
     github: 'https://github.com/fajarlm/wishora',
     demo: 'https://wishora.web.id'
   },
+  {
+    id: 2,
+    title: 'Moneta',
+    description: {
+      en: 'AI-driven personal finance dashboard with real-time budget tracking, transaction analytics, and intelligent expense validation.',
+      id: 'Dashboard keuangan pribadi bertenaga AI dengan pelacakan anggaran real-time, analitik transaksi, dan validasi pengeluaran pintar.'
+    },
+    type: 'web',
+    tech: ['Next.js', 'TypeScript', 'Tailwind', 'Supabase', 'Gemini AI'],
+    img: monetaImg,
+    gallery: [monetaDoc],
+    github: 'https://github.com/fajarlm/Moneta',
+    demo: 'https://finmoneta.vercel.app'
+  },
   { 
-    id: 2, 
+    id: 3, 
     title: 'Quranic', 
     description: {
       en: 'A modern Quran learning platform with interactive features.',
@@ -71,7 +87,7 @@ export const projectsData: Project[] = [
     demo: 'https://quranic-seven.vercel.app/' 
   },
   { 
-    id: 3, 
+    id: 4, 
     title: 'Digital Attendance System', 
     description: {
       en: 'A digital attendance system for employees featuring real-time tracking.',
