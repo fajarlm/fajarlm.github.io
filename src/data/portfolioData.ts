@@ -9,6 +9,7 @@ import docmorphImg from '../assets/projects/docmorph.png';
 import docmorphDoc from '../assets/projects/docmorph-doc.png';
 import gotohImg from '../assets/projects/gotoh.png';
 import gotohDoc from '../assets/projects/gotoh-doc.png';
+import chenErdImg from '../assets/projects/chen-erd.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -102,8 +103,22 @@ export const projectsData: Project[] = [
     github: 'https://github.com/fajarlm/GOTOH',
     demo: 'https://gotoh.fajarlm.biz.id/'
   },
+  {
+    id: 5,
+    title: 'Chen ERD Generator',
+    description: {
+      en: 'Interactive Chen notation ERD generator and visual SQL modeling tool with drag-and-drop schema design and instant diagram export.',
+      id: 'Generator diagram ERD notasi Chen interaktif dan pemodel visual SQL dengan desain skema drag-and-drop dan ekspor instan.'
+    },
+    type: 'web',
+    tech: ['React', 'Vite', 'Canvas/SVG', 'SQL Parser', 'Tailwind'],
+    img: chenErdImg,
+    gallery: [],
+    github: 'https://github.com/fajarlm/chen-erd',
+    demo: 'https://chen-erd.vercel.app'
+  },
   { 
-    id: 5, 
+    id: 6, 
     title: 'Quranic', 
     description: {
       en: 'A modern Quran learning platform with interactive features.',
@@ -119,7 +134,7 @@ export const projectsData: Project[] = [
     demo: 'https://quranic-seven.vercel.app/' 
   },
   { 
-    id: 6, 
+    id: 7, 
     title: 'Digital Attendance System', 
     description: {
       en: 'A digital attendance system for employees featuring real-time tracking.',
