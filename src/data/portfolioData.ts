@@ -13,6 +13,7 @@ import chenErdImg from '../assets/projects/chen-erd.png';
 import absensiFlow from '../assets/projects/absensi-flow.png';
 import absensiErd from '../assets/projects/absensi-erd.png';
 import aeroweatherImg from '../assets/projects/aeroweather.png';
+import gotohMobileImg from '../assets/projects/gotoh-mobile.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -161,6 +162,19 @@ export const projectsData: Project[] = [
     img: aeroweatherImg,
     gallery: [],
     github: 'https://github.com/fajarlm/aeroweather_app'
+  },
+  {
+    id: 9,
+    title: 'GOTOH Mobile',
+    description: {
+      en: 'Community wellness companion mobile app featuring local fitness group discovery, workout streak tracking, and direct consultation.',
+      id: 'Aplikasi mobile pendamping kebugaran komunitas dengan fitur penemuan grup latihan lokal, pelacakan target kalori, dan konsultasi.'
+    },
+    type: 'mobile',
+    tech: ['Flutter', 'Dart', 'REST API', 'Community UI', 'State Management'],
+    img: gotohMobileImg,
+    gallery: [],
+    github: 'https://github.com/fajarlm/gotoh-mobile-flutter'
   },
   
 ];
