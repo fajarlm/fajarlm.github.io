@@ -7,6 +7,8 @@ import monetaImg from '../assets/projects/moneta.png';
 import monetaDoc from '../assets/projects/moneta-doc.png';
 import docmorphImg from '../assets/projects/docmorph.png';
 import docmorphDoc from '../assets/projects/docmorph-doc.png';
+import gotohImg from '../assets/projects/gotoh.png';
+import gotohDoc from '../assets/projects/gotoh-doc.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -86,8 +88,22 @@ export const projectsData: Project[] = [
     github: 'https://github.com/fajarlm/convert-file',
     demo: 'https://convert-file-vert.vercel.app'
   },
+  {
+    id: 4,
+    title: 'GOTOH',
+    description: {
+      en: 'Community health platform connecting users with local health groups, personalized workout plans, and expert consultations.',
+      id: 'Platform kesehatan komunitas yang menghubungkan pengguna dengan grup kesehatan lokal, rekomendasi olahraga personal, dan konsultasi.'
+    },
+    type: 'web',
+    tech: ['React', 'Express.js', 'Vite', 'Tailwind', 'Node.js'],
+    img: gotohImg,
+    gallery: [gotohDoc],
+    github: 'https://github.com/fajarlm/GOTOH',
+    demo: 'https://gotoh.fajarlm.biz.id/'
+  },
   { 
-    id: 4, 
+    id: 5, 
     title: 'Quranic', 
     description: {
       en: 'A modern Quran learning platform with interactive features.',
@@ -103,7 +119,7 @@ export const projectsData: Project[] = [
     demo: 'https://quranic-seven.vercel.app/' 
   },
   { 
-    id: 5, 
+    id: 6, 
     title: 'Digital Attendance System', 
     description: {
       en: 'A digital attendance system for employees featuring real-time tracking.',
