@@ -14,6 +14,7 @@ import absensiFlow from '../assets/projects/absensi-flow.png';
 import absensiErd from '../assets/projects/absensi-erd.png';
 import aeroweatherImg from '../assets/projects/aeroweather.png';
 import gotohMobileImg from '../assets/projects/gotoh-mobile.png';
+import tixIdImg from '../assets/projects/tix-id.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -175,6 +176,19 @@ export const projectsData: Project[] = [
     img: gotohMobileImg,
     gallery: [],
     github: 'https://github.com/fajarlm/gotoh-mobile-flutter'
+  },
+  {
+    id: 10,
+    title: 'TIX ID Clone',
+    description: {
+      en: 'Cinema ticket booking mobile application featuring movie showtimes, theater selection (XXI, CGV), seat reservations, and digital ticket passes.',
+      id: 'Aplikasi pemesanan tiket bioskop modern berbasis Flutter dengan jadwal film, filter teater (XXI, CGV), pemilihan kursi interaktif, dan e-tiket.'
+    },
+    type: 'mobile',
+    tech: ['Flutter', 'Dart', 'Cinema Booking', 'Seat Picker', 'UI Slicing'],
+    img: tixIdImg,
+    gallery: [],
+    github: 'https://github.com/fajarlm/TIX-ID-Clone'
   },
   
 ];
