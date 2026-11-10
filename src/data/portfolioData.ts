@@ -1,6 +1,8 @@
 import type { Skill, Project, Certificate, ExperienceItem } from '../types';
 import quranic from '../assets/projects/quranic.png';
 import atten from '../assets/projects/attendances.png';
+import wishoraImg from '../assets/projects/wishora.png';
+import wishoraDoc from '../assets/projects/wishora-doc.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -38,8 +40,22 @@ export const techStack: Skill[] = [
 ];
 
 export const projectsData: Project[] = [
+  {
+    id: 1,
+    title: 'Wishora',
+    description: {
+      en: 'Interactive digital greeting cards and storytelling mini-website platform featuring virtual candle blowing, animated letters, and music.',
+      id: 'Platform kartu ucapan digital interaktif dan website mini storytelling dengan fitur tiup lilin virtual, surat animasi, dan musik latar.'
+    },
+    type: 'web',
+    tech: ['Next.js', 'React', 'Tailwind', 'TypeScript', 'Framer Motion'],
+    img: wishoraImg,
+    gallery: [wishoraDoc],
+    github: 'https://github.com/fajarlm/wishora',
+    demo: 'https://wishora.web.id'
+  },
   { 
-    id: 1, 
+    id: 2, 
     title: 'Quranic', 
     description: {
       en: 'A modern Quran learning platform with interactive features.',
@@ -55,7 +71,7 @@ export const projectsData: Project[] = [
     demo: 'https://quranic-seven.vercel.app/' 
   },
   { 
-    id: 2, 
+    id: 3, 
     title: 'Digital Attendance System', 
     description: {
       en: 'A digital attendance system for employees featuring real-time tracking.',
