@@ -12,6 +12,7 @@ import gotohDoc from '../assets/projects/gotoh-doc.png';
 import chenErdImg from '../assets/projects/chen-erd.png';
 import absensiFlow from '../assets/projects/absensi-flow.png';
 import absensiErd from '../assets/projects/absensi-erd.png';
+import aeroweatherImg from '../assets/projects/aeroweather.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -147,6 +148,19 @@ export const projectsData: Project[] = [
     img: atten,
     gallery: [absensiFlow, absensiErd],
     github: 'https://github.com/fajarlm/AbsensikuV2' 
+  },
+  {
+    id: 8,
+    title: 'AeroWeather Mobile',
+    description: {
+      en: 'Real-time weather and air quality index (AQI) monitoring mobile app with GPS tracking, glassmorphism UI, and background notifications.',
+      id: 'Aplikasi mobile pemantau cuaca dan kualitas udara (AQI) real-time dengan pelacakan GPS, UI glassmorphism, dan notifikasi latar belakang.'
+    },
+    type: 'mobile',
+    tech: ['Flutter', 'Dart', 'OpenWeather API', 'Background Service', 'Geolocator'],
+    img: aeroweatherImg,
+    gallery: [],
+    github: 'https://github.com/fajarlm/aeroweather_app'
   },
   
 ];
