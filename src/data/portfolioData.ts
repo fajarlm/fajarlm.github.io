@@ -5,6 +5,8 @@ import wishoraImg from '../assets/projects/wishora.png';
 import wishoraDoc from '../assets/projects/wishora-doc.png';
 import monetaImg from '../assets/projects/moneta.png';
 import monetaDoc from '../assets/projects/moneta-doc.png';
+import docmorphImg from '../assets/projects/docmorph.png';
+import docmorphDoc from '../assets/projects/docmorph-doc.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -70,8 +72,22 @@ export const projectsData: Project[] = [
     github: 'https://github.com/fajarlm/Moneta',
     demo: 'https://finmoneta.vercel.app'
   },
+  {
+    id: 3,
+    title: 'DocMorph Studio',
+    description: {
+      en: 'In-browser neural document editor and multi-format converter powered by WebAssembly, client-side translation, and secure local processing.',
+      id: 'Editor dokumen neural dan pengonversi format di browser bertenaga WebAssembly, terjemahan lokal, dan pemrosesan aman tanpa upload.'
+    },
+    type: 'web',
+    tech: ['Next.js', 'WASM', 'Tailwind', 'TypeScript', 'Web APIs'],
+    img: docmorphImg,
+    gallery: [docmorphDoc],
+    github: 'https://github.com/fajarlm/convert-file',
+    demo: 'https://convert-file-vert.vercel.app'
+  },
   { 
-    id: 3, 
+    id: 4, 
     title: 'Quranic', 
     description: {
       en: 'A modern Quran learning platform with interactive features.',
@@ -87,7 +103,7 @@ export const projectsData: Project[] = [
     demo: 'https://quranic-seven.vercel.app/' 
   },
   { 
-    id: 4, 
+    id: 5, 
     title: 'Digital Attendance System', 
     description: {
       en: 'A digital attendance system for employees featuring real-time tracking.',
