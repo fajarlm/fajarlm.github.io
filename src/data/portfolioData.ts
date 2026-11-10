@@ -10,6 +10,8 @@ import docmorphDoc from '../assets/projects/docmorph-doc.png';
 import gotohImg from '../assets/projects/gotoh.png';
 import gotohDoc from '../assets/projects/gotoh-doc.png';
 import chenErdImg from '../assets/projects/chen-erd.png';
+import absensiFlow from '../assets/projects/absensi-flow.png';
+import absensiErd from '../assets/projects/absensi-erd.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -135,15 +137,15 @@ export const projectsData: Project[] = [
   },
   { 
     id: 7, 
-    title: 'Digital Attendance System', 
+    title: 'AbsensiKu — Digital Attendance', 
     description: {
-      en: 'A digital attendance system for employees featuring real-time tracking.',
-      id: 'Sistem absensi digital untuk karyawan dengan fitur pelacakan real-time.'
+      en: 'Real-time school attendance management system with role-based access for admins, teachers, and students.',
+      id: 'Sistem manajemen presensi sekolah real-time dengan kontrol akses peran untuk admin, guru, dan siswa.'
     },
     type: 'web', 
-    tech: ['tailwind', 'MySQL', 'Laravel'], 
+    tech: ['Laravel', 'Bootstrap 5', 'Livewire', 'MySQL'], 
     img: atten,
-    gallery: [],
+    gallery: [absensiFlow, absensiErd],
     github: 'https://github.com/fajarlm/AbsensikuV2' 
   },
   
