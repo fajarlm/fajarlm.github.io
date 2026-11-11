@@ -1,5 +1,7 @@
 import type { Skill, Project, Certificate, ExperienceItem } from '../types';
 import quranic from '../assets/projects/quranic.png';
+import quranicWebDoc1 from '../assets/projects/quranic-web-doc1.png';
+import quranicWebDoc2 from '../assets/projects/quranic-web-doc2.png';
 import atten from '../assets/projects/attendances.png';
 import wishoraImg from '../assets/projects/wishora.png';
 import wishoraDoc from '../assets/projects/wishora-doc.png';
@@ -10,12 +12,19 @@ import docmorphDoc from '../assets/projects/docmorph-doc.png';
 import gotohImg from '../assets/projects/gotoh.png';
 import gotohDoc from '../assets/projects/gotoh-doc.png';
 import chenErdImg from '../assets/projects/chen-erd.png';
+import chenErdDoc1 from '../assets/projects/chen-erd-doc1.png';
+import chenErdDoc2 from '../assets/projects/chen-erd-doc2.png';
 import absensiFlow from '../assets/projects/absensi-flow.png';
 import absensiErd from '../assets/projects/absensi-erd.png';
 import aeroweatherImg from '../assets/projects/aeroweather.png';
 import aeroweatherDoc1 from '../assets/projects/aeroweather-doc1.png';
 import aeroweatherDoc2 from '../assets/projects/aeroweather-doc2.png';
 import gotohMobileImg from '../assets/projects/gotoh-mobile.png';
+import gotohMobileDoc1 from '../assets/projects/gotoh-mobile-doc1.png';
+import gotohMobileDoc2 from '../assets/projects/gotoh-mobile-doc2.png';
+import quranicMobileImg from '../assets/projects/quranic-mobile.png';
+import quranicMobileDoc1 from '../assets/projects/quranic-mobile-doc1.png';
+import quranicMobileDoc2 from '../assets/projects/quranic-mobile-doc2.png';
 
 // Certificate Imports
 import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
@@ -119,7 +128,7 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['React', 'Vite', 'Canvas/SVG', 'SQL Parser', 'Tailwind'],
     img: chenErdImg,
-    gallery: [],
+    gallery: [chenErdDoc1, chenErdDoc2],
     github: 'https://github.com/fajarlm/chen-erd',
     demo: 'https://chen-erd.vercel.app'
   },
@@ -133,9 +142,7 @@ export const projectsData: Project[] = [
     type: 'web', 
     tech: ['React','Flowbite','Tailwind'], 
     img: quranic, 
-    gallery: [
-      
-    ],
+    gallery: [quranicWebDoc1, quranicWebDoc2],
     github: 'https://github.com/fajarlm/quranic', 
     demo: 'https://quranic-seven.vercel.app/' 
   },
@@ -176,8 +183,22 @@ export const projectsData: Project[] = [
     type: 'mobile',
     tech: ['Flutter', 'Dart', 'REST API', 'Community UI', 'State Management'],
     img: gotohMobileImg,
-    gallery: [],
+    gallery: [gotohMobileDoc1, gotohMobileDoc2],
     github: 'https://github.com/fajarlm/gotoh-mobile-flutter'
+  },
+  {
+    id: 10,
+    title: 'Quranic Mobile',
+    description: {
+      en: 'Modern Quran application for Android with authentic Arabic typography, phonetic transliteration, Indonesian translation, and streaming audio recitations.',
+      id: 'Aplikasi Al-Quran modern untuk Android dengan tipografi Arab autentik, transliterasi fonetik, terjemahan Kemenag RI, dan streaming murattal audio.'
+    },
+    type: 'mobile',
+    tech: ['Flutter', 'Dart', 'Just Audio', 'Kemenag API', 'SQLite', 'Material 3'],
+    img: quranicMobileImg,
+    gallery: [quranicMobileDoc1, quranicMobileDoc2],
+    github: 'https://github.com/fajarlm/Quranic-mobile',
+    apk: 'https://github.com/fajarlm/Quranic-mobile/releases/download/v1.0.0/Quranic-Mobile-v1.0.0.apk'
   }
 ];
 
