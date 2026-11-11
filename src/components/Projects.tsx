@@ -77,6 +77,11 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                 <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/90 text-[var(--text)] px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border border-white/20">
                   {p.type}
                 </div>
+                {p.gallery && p.gallery.length > 0 && (
+                  <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider flex items-center gap-1 border border-white/20 shadow-sm">
+                    <ImageIcon size={11} /> {p.gallery.length + 1} {lang === 'en' ? 'Photos' : 'Foto'}
+                  </div>
+                )}
               </div>
 
               <div className="px-2 flex flex-col flex-grow z-10">
