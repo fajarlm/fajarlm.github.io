@@ -14,6 +14,7 @@ export interface Project {
   gallery?: string[];
   github?: string;
   demo?: string;
+  apk?: string;
 }
 
 export interface Certificate {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { projectsData, translations } from '../data/portfolioData';
-import { Globe, ExternalLink, ChevronLeft, ChevronRight, X, Image as ImageIcon } from 'lucide-react';
+import { Globe, ExternalLink, ChevronLeft, ChevronRight, X, Image as ImageIcon, Download } from 'lucide-react';
 import SpotlightCard from './ui/SpotlightCard';
 import AOS from 'aos';
 import type { Language } from '../types';
@@ -91,13 +91,20 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                   ))}
                 </div>
                 
-                <div className="mt-auto flex gap-3 pt-4 border-t border-[var(--border)]">
-                  <a href={p.github} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] text-[9px] font-bold uppercase tracking-widest hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all">
-                    <Globe size={14} /> Repo
-                  </a>
+                <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-[var(--border)]">
+                  {p.github && (
+                    <a href={p.github} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[70px] flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] text-[9px] font-bold uppercase tracking-widest hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all">
+                      <Globe size={13} /> Repo
+                    </a>
+                  )}
                   {p.demo && (
-                    <a href={p.demo} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[var(--accent)] text-white text-[9px] font-bold uppercase tracking-widest hover:opacity-80 transition-all">
-                      <ExternalLink size={14} /> Demo
+                    <a href={p.demo} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[70px] flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[var(--accent)] text-white text-[9px] font-bold uppercase tracking-widest hover:opacity-80 transition-all">
+                      <ExternalLink size={13} /> Demo
+                    </a>
+                  )}
+                  {p.apk && (
+                    <a href={p.apk} target="_blank" rel="noopener noreferrer" download className="flex-1 min-w-[95px] flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[9px] font-bold uppercase tracking-widest transition-all shadow-sm shadow-emerald-900/20">
+                      <Download size={13} /> Unduh APK
                     </a>
                   )}
                 </div>
