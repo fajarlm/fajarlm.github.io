@@ -69,16 +69,16 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                 onClick={() => setSelectedGallery([p.img, ...(p.gallery || [])])}
               >
                 <img src={p.img} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                   <div className="bg-white p-3 rounded-full text-black shadow-2xl translate-y-2 group-hover/img:translate-y-0 transition-all">
                     <ImageIcon size={20} />
                   </div>
                 </div>
-                <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/90 text-[var(--text)] px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border border-white/20">
+                <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/90 text-[var(--text)] px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border border-white/20 pointer-events-none">
                   {p.type}
                 </div>
                 {p.gallery && p.gallery.length > 0 && (
-                  <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider flex items-center gap-1 border border-white/20 shadow-sm">
+                  <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider flex items-center gap-1 border border-white/20 shadow-sm pointer-events-none">
                     <ImageIcon size={11} /> {p.gallery.length + 1} {lang === 'en' ? 'Photos' : 'Foto'}
                   </div>
                 )}
