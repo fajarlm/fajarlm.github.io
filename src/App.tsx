@@ -6,6 +6,7 @@ import type { Theme, Language } from './types';
 
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+import Dock from './components/Dock';
 import Hero from './components/Hero';
 import About from './components/About';
 import Experience from './components/Experience';
@@ -77,6 +78,8 @@ export default function App() {
         <Footer lang={lang} />
         
         <ChatAssistant lang={lang} />
+
+        <Dock lang={lang} />
 
         <button 
           onClick={scrollToTop} 
