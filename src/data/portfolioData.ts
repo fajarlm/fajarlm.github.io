@@ -8,12 +8,10 @@ import wishoraDoc from '../assets/projects/wishora-doc.png';
 import monetaImg from '../assets/projects/moneta.png';
 import monetaDoc from '../assets/projects/moneta-doc.png';
 import docmorphImg from '../assets/projects/docmorph.png';
-import docmorphDoc from '../assets/projects/docmorph-doc.png';
 import docmorphDoc2 from '../assets/projects/docmorph-doc2.png';
 import gotohImg from '../assets/projects/gotoh.png';
 import gotohDoc from '../assets/projects/gotoh-doc.png';
 import chenErdImg from '../assets/projects/chen-erd.png';
-import chenErdDoc1 from '../assets/projects/chen-erd-doc1.png';
 import chenErdDoc2 from '../assets/projects/chen-erd-doc2.png';
 import absensiFlow from '../assets/projects/absensi-flow.png';
 import absensiErd from '../assets/projects/absensi-erd.png';
@@ -101,7 +99,7 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['Next.js', 'WASM', 'Tailwind', 'TypeScript', 'Web APIs'],
     img: docmorphImg,
-    gallery: [docmorphDoc, docmorphDoc2],
+    gallery: [docmorphDoc2],
     github: 'https://github.com/fajarlm/convert-file',
     demo: 'https://convert-file-vert.vercel.app'
   },
@@ -129,7 +127,7 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['React', 'Vite', 'Canvas/SVG', 'SQL Parser', 'Tailwind'],
     img: chenErdImg,
-    gallery: [chenErdDoc1, chenErdDoc2],
+    gallery: [chenErdDoc2],
     github: 'https://github.com/fajarlm/chen-erd',
     demo: 'https://chen-erd.vercel.app'
   },
@@ -145,7 +143,7 @@ export const projectsData: Project[] = [
     img: quranic, 
     gallery: [quranicWebDoc1, quranicWebDoc2],
     github: 'https://github.com/fajarlm/quranic', 
-    demo: 'https://quranic-seven.vercel.app/' 
+    demo: 'https://quani.vercel.app/' 
   },
   { 
     id: 7, 
