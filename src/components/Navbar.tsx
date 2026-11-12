@@ -26,12 +26,11 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-4 text-[var(--text)]">
           <button 
             onClick={onOpenSidebar} 
-            className="p-2 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] hover:opacity-100 opacity-80 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all active:scale-95 flex items-center gap-2 border border-[var(--border)]"
+            className="p-2 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] hover:opacity-100 opacity-80 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all active:scale-95 flex items-center justify-center border border-[var(--border)]"
             title="Menu"
             aria-label="Buka Menu"
           >
             <Menu size={18} />
-            <span className="hidden sm:inline uppercase tracking-widest text-[10px] font-bold">Menu</span>
           </button>
 
           <a href="#home" className="text-xl font-bold tracking-tighter text-[var(--text)] group flex items-center gap-2">

@@ -57,9 +57,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, lang }) => {
             <span className="text-xl font-black text-[var(--text)] tracking-tight">
               fajarlm<span className="accent-text">.</span>
             </span>
-            <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-[var(--icon-bg)] text-[var(--text-muted)] border border-[var(--border)]">
-              Menu
-            </span>
           </div>
 
           <button 
@@ -85,7 +82,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, lang }) => {
                 <li key={item.id}>
                   <a 
                     href={`#${item.id}`} 
-                    onClick={() => onClose()} 
                     className="group flex items-center justify-between p-3 rounded-2xl hover:bg-[var(--icon-bg)] transition-all hover:translate-x-1"
                   >
                     <div className="flex items-center gap-3">
