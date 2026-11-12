@@ -34,5 +34,24 @@ export interface ExperienceItem {
   points: { en: string[]; id: string[] };
 }
 
+export interface Review {
+  id: string;
+  name: string;
+  role: string;
+  company?: string;
+  rating: number;
+  message: string;
+  date: string;
+  avatar?: string;
+  relation?: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  sender: 'user' | 'assistant';
+  text: string;
+  timestamp: string;
+}
+
 export type Theme = 'light' | 'dark' | 'cyan';
 export type Language = 'en' | 'id';

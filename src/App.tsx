@@ -12,8 +12,10 @@ import Experience from './components/Experience';
 import TechStack from './components/TechStack';
 import Projects from './components/Projects';
 import Certificates from './components/Certificates';
+import Reviews from './components/Reviews';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import ChatAssistant from './components/ChatAssistant';
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme) || 'light');
@@ -66,16 +68,19 @@ export default function App() {
             <TechStack lang={lang} />
             <Projects lang={lang} />
             <Certificates lang={lang} />
+            <Reviews lang={lang} />
           </div>
 
           <Contact lang={lang} />
         </main>
 
         <Footer lang={lang} />
+        
+        <ChatAssistant lang={lang} />
 
         <button 
           onClick={scrollToTop} 
-          className={`fixed bottom-10 right-10 p-4 rounded-full bg-[var(--text)] text-[var(--bg)] shadow-2xl transition-all duration-700 z-50 hover:scale-110 active:scale-90 ${showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-24 opacity-0'}`}
+          className={`fixed bottom-24 right-6 p-3.5 rounded-full bg-[var(--text)] text-[var(--bg)] shadow-2xl transition-all duration-700 z-50 hover:scale-110 active:scale-90 ${showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-24 opacity-0 pointer-events-none'}`}
           aria-label="Scroll to top"
         >
           <ChevronUp size={20} />

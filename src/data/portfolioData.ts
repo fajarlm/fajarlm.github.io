@@ -1,4 +1,4 @@
-import type { Skill, Project, Certificate, ExperienceItem } from '../types';
+import type { Skill, Project, Certificate, ExperienceItem, Review } from '../types';
 import quranic from '../assets/projects/quranic.png';
 import quranicWebDoc1 from '../assets/projects/quranic-web-doc1.png';
 import quranicWebDoc2 from '../assets/projects/quranic-web-doc2.png';
@@ -257,6 +257,39 @@ export const experiencesData: ExperienceItem[] = [
   },
 ];
 
+export const initialReviewsData: Review[] = [
+  {
+    id: 'rev-1',
+    name: 'Rizky Pratama',
+    role: 'Frontend Lead',
+    company: 'PT. Surya Manggala Informatika',
+    relation: 'Lead / Supervisor',
+    rating: 5,
+    message: 'Fajar menunjukkan pemahaman yang sangat kuat pada Vue 3 Composition API dan implementasi UI i18n selama masa magang. Cepat belajar, komunikatif, dan selalu menulis kode yang rapi serta terstruktur.',
+    date: '10 Nov 2025'
+  },
+  {
+    id: 'rev-2',
+    name: 'Arif Hidayat',
+    role: 'Project Owner',
+    company: 'Wishora & AbsensiKu',
+    relation: 'Client',
+    rating: 5,
+    message: 'Sangat puas bekerja sama dengan Fajar. Proyek diselesaikan tepat waktu, responsif terhadap revisi, dan hasil UI/UX-nya interaktif melebihi ekspektasi kami. Recommended developer!',
+    date: '28 Des 2025'
+  },
+  {
+    id: 'rev-3',
+    name: 'Dewi Sartika',
+    role: 'UI/UX Designer',
+    company: 'Tech Studio',
+    relation: 'Colleague',
+    rating: 5,
+    message: 'Kolaborasi dengan Fajar sangat menyenangkan. Slicing dari Figma ke kode React dan Flutter selalu presisi (pixel-perfect) dan animasinya halus berkat pemahamannya yang dalam terhadap user experience.',
+    date: '15 Jan 2026'
+  }
+];
+
 export const socialLinks = {
   github: "https://github.com/fajarlm",
   linkedin: "https://www.linkedin.com/in/fajar-kusuma-2f88/",
@@ -266,22 +299,112 @@ export const socialLinks = {
 
 export const translations = {
   en: {
-    nav: { about: 'About', projects: 'Projects', certificates: 'Certificates', contact: 'Contact' },
+    nav: { about: 'About', projects: 'Projects', certificates: 'Certificates', reviews: 'Reviews', contact: 'Contact' },
     hero: { role: 'Fullstack Developer', tagline: 'Hi, I\'m Fajar — I build web apps from front to back. Currently a vocational student at SMK Wikrama focused on real-world projects. Let\'s connect!' },
     about: { title: 'A bit about me.', desc: 'I\'m a Software Engineering student at SMK Wikrama Bogor. I enjoy turning ideas into working products — mostly with Laravel, React, and Next.js. Outside of class, I take on freelance projects and constantly learn new tools.' },
     tech: { title: 'Tech &', subtitle: 'Tools.' },
     projects: { title: 'My', subtitle: 'Projects.', filterAll: 'All' },
     certificates: { title: 'My', subtitle: 'Certificates.' },
+    reviews: {
+      badge: 'Social Proof & Feedback',
+      title: 'What People Say.',
+      subtitle: 'Verified testimonials from supervisors, clients, and project collaborators.',
+      avgRating: 'Average Rating',
+      totalReviews: 'Reviews',
+      writeReview: 'Write a Review',
+      modalTitle: 'Submit a Review',
+      modalDesc: 'Share your genuine feedback and collaboration experience with Fajar.',
+      nameLabel: 'Your Full Name',
+      namePlaceholder: 'e.g. Sarah Jenkins',
+      roleLabel: 'Role & Relationship',
+      rolePlaceholder: 'e.g. Product Manager / Client / Peer',
+      companyLabel: 'Company / Organization (Optional)',
+      companyPlaceholder: 'e.g. Acme Studio',
+      ratingLabel: 'Star Rating',
+      messageLabel: 'Review Message',
+      messagePlaceholder: 'Describe your experience working together, communication, deliverables, or technical excellence...',
+      submitBtn: 'Submit Review',
+      submittingBtn: 'Submitting...',
+      successToast: 'Thank you! Your review has been saved successfully.',
+      emptyTitle: 'No reviews yet',
+      emptyDesc: 'Be the first person to leave an endorsement!'
+    },
+    chat: {
+      triggerBadge: 'Ask AI or WhatsApp',
+      headerTitle: 'Fajar Virtual Assistant',
+      headerStatus: 'Online • Realtime Answers',
+      tabAi: 'AI Assistant',
+      tabWa: 'WhatsApp Direct',
+      greeting: 'Hi there! I am Fajar Kusuma\'s portfolio assistant. Ask me anything about Fajar\'s engineering stack, mobile/web projects, internship history, or hiring availability!',
+      prompt1: 'What are Fajar\'s core tech skills?',
+      prompt2: 'Tell me about the Flutter mobile apps',
+      prompt3: 'What was Fajar\'s internship role?',
+      prompt4: 'How can I reach or hire Fajar?',
+      inputPlaceholder: 'Ask a question about Fajar...',
+      sendBtn: 'Send',
+      waTitle: 'Chat Directly on WhatsApp',
+      waDesc: 'Want to talk about a job opening, internship, or freelance project directly with Fajar?',
+      waNameLabel: 'Your Name',
+      waNamePlaceholder: 'e.g. John Doe',
+      waMsgLabel: 'Message',
+      waMsgPlaceholder: 'Hi Fajar, I came across your portfolio and would like to discuss...',
+      waBtn: 'Open WhatsApp (+62 857-7903-9757)'
+    },
     contact: { title: 'GET IN', subtitle: 'TOUCH.', available: 'Available for internship & junior positions', social: 'Find me on', send: 'Send Message' },
     footer: { copyright: '© 2024 Fajar Kusuma. All rights reserved.' }
   },
   id: {
-    nav: { about: 'Tentang', projects: 'Proyek', certificates: 'Sertifikat', contact: 'Kontak' },
+    nav: { about: 'Tentang', projects: 'Proyek', certificates: 'Sertifikat', reviews: 'Ulasan', contact: 'Kontak' },
     hero: { role: 'Fullstack Developer', tagline: 'Halo, saya Fajar — saya membangun aplikasi web dari depan sampai belakang. Saat ini siswa SMK Wikrama yang fokus pada proyek nyata. Yuk terhubung!' },
     about: { title: 'Sedikit tentang saya.', desc: 'Saya siswa Rekayasa Perangkat Lunak di SMK Wikrama Bogor. Saya suka mengubah ide menjadi produk nyata — terutama dengan Laravel, React, dan Next.js. Di luar jam sekolah, saya mengerjakan proyek freelance dan terus belajar hal baru.' },
     tech: { title: 'Teknologi &', subtitle: 'Alat.' },
     projects: { title: 'Proyek', subtitle: 'Saya.', filterAll: 'Semua' },
     certificates: { title: 'Sertifikat', subtitle: 'Saya.' },
+    reviews: {
+      badge: 'Ulasan & Testimoni',
+      title: 'Apa Kata Mereka.',
+      subtitle: 'Testimoni terverifikasi dari supervisor magang, klien, dan rekan kolaborasi proyek.',
+      avgRating: 'Rata-rata Rating',
+      totalReviews: 'Ulasan',
+      writeReview: 'Tulis Ulasan',
+      modalTitle: 'Beri Ulasan Baru',
+      modalDesc: 'Bagikan pengalaman dan testimoni jujur Anda selama bekerja sama dengan Fajar.',
+      nameLabel: 'Nama Lengkap',
+      namePlaceholder: 'contoh: Sarah Jenkins',
+      roleLabel: 'Peran & Hubungan',
+      rolePlaceholder: 'contoh: Product Manager / Klien / Rekan Tim',
+      companyLabel: 'Perusahaan / Organisasi (Opsional)',
+      companyPlaceholder: 'contoh: Acme Studio',
+      ratingLabel: 'Rating Bintang',
+      messageLabel: 'Pesan Ulasan',
+      messagePlaceholder: 'Ceritakan pengalaman kerja sama, etos kerja, komunikasi, atau kualitas hasil karya Fajar...',
+      submitBtn: 'Kirim Ulasan',
+      submittingBtn: 'Mengirim...',
+      successToast: 'Terima kasih! Ulasan Anda berhasil disimpan.',
+      emptyTitle: 'Belum ada ulasan',
+      emptyDesc: 'Jadilah orang pertama yang menuliskan ulasan untuk Fajar!'
+    },
+    chat: {
+      triggerBadge: 'Tanya AI / WhatsApp',
+      headerTitle: 'Asisten Virtual Fajar',
+      headerStatus: 'Online • Jawaban Instan',
+      tabAi: 'AI Assistant',
+      tabWa: 'WhatsApp Langsung',
+      greeting: 'Halo! Saya asisten portofolio virtual Fajar Kusuma. Anda bisa bertanya seputar tech stack Fajar, proyek web/mobile unggulan, pengalaman magang, atau mendiskusikan peluang kerja sama!',
+      prompt1: 'Apa saja skill utama Fajar?',
+      prompt2: 'Ceritakan tentang proyek mobile (Quranic & AeroWeather)',
+      prompt3: 'Bagaimana pengalaman magang Fajar?',
+      prompt4: 'Bagaimana cara menghubungi Fajar untuk project?',
+      inputPlaceholder: 'Ketik pertanyaan seputar Fajar...',
+      sendBtn: 'Kirim',
+      waTitle: 'Ngobrol Langsung via WhatsApp',
+      waDesc: 'Ingin mendiskusikan tawaran magang, posisi junior, atau proyek freelance langsung dengan Fajar secara personal?',
+      waNameLabel: 'Nama Anda',
+      waNamePlaceholder: 'contoh: Budi Santoso',
+      waMsgLabel: 'Pesan',
+      waMsgPlaceholder: 'Halo Fajar, saya melihat portofolio Anda dan tertarik mendiskusikan...',
+      waBtn: 'Buka WhatsApp (+62 857-7903-9757)'
+    },
     contact: { title: 'HUBUNGI', subtitle: 'SAYA.', available: 'Tersedia untuk magang & posisi junior', social: 'Temukan saya di', send: 'Kirim Pesan' },
     footer: { copyright: '© 2024 Fajar Kusuma. Hak cipta dilindungi.' }
   }

@@ -21,6 +21,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, setTheme, lang, setLang, onOpenS
     { name: lang === 'en' ? 'Skills' : 'Keahlian', href: '#keahlian' },
     { name: nav.projects, href: '#proyek' },
     { name: nav.certificates, href: '#sertifikat' },
+    { name: nav.reviews, href: '#reviews' },
     { name: nav.contact, href: '#contact' },
   ];
 

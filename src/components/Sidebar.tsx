@@ -19,6 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, lang }) => {
     { name: lang === 'en' ? 'Skills' : 'Keahlian', id: 'keahlian' },
     { name: t.projects, id: 'proyek' },
     { name: t.certificates, id: 'sertifikat' },
+    { name: t.reviews, id: 'reviews' },
     { name: t.contact, id: 'contact' }
   ];
 
