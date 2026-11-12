@@ -132,7 +132,10 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
       </div>
 
       {selectedGallery && (
-        <div className="fixed inset-0 z-[200] flex flex-col items-center bg-black/95 backdrop-blur-xl animate-in fade-in duration-300 overflow-y-auto no-scrollbar">
+        <div 
+          onClick={() => setSelectedGallery(null)}
+          className="fixed inset-0 z-[200] flex flex-col items-center bg-black/50 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto no-scrollbar"
+        >
           <div className="sticky top-0 w-full flex justify-end p-8 z-30">
             <button 
               onClick={() => setSelectedGallery(null)}
@@ -142,7 +145,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
             </button>
           </div>
           
-          <div className="container mx-auto max-w-5xl px-6 pb-20 space-y-12">
+          <div className="container mx-auto max-w-5xl px-6 pb-20 space-y-12" onClick={e => e.stopPropagation()}>
             <div className="text-center">
               <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/40 mb-4">{lang === 'en' ? 'Project Documentation' : 'Dokumentasi Proyek'}</p>
               <h3 className="text-3xl md:text-5xl font-black text-white tracking-tighter">{lang === 'en' ? 'Gallery View.' : 'Tampilan Galeri.'}</h3>

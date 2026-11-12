@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Star, MessageSquarePlus, Quote, X, CheckCircle2, User, Building, HeartHandshake } from 'lucide-react';
-import { initialReviewsData, translations } from '../data/portfolioData';
+import { Star, StarHalf, MessageSquarePlus, Quote, X, CheckCircle2, User, Building, HeartHandshake, Sparkles } from 'lucide-react';
+import { translations } from '../data/portfolioData';
 import SpotlightCard from './ui/SpotlightCard';
 import type { Language, Review } from '../types';
 
@@ -10,23 +10,56 @@ interface ReviewsProps {
 
 const LOCAL_STORAGE_KEY = 'fajar_portfolio_reviews';
 
+export const renderStars = (rating: number, size = 15) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (rating >= i) {
+      stars.push(
+        <Star
+          key={i}
+          size={size}
+          className="fill-amber-400 text-amber-400"
+        />
+      );
+    } else if (rating >= i - 0.5) {
+      stars.push(
+        <StarHalf
+          key={i}
+          size={size}
+          className="fill-amber-400 text-amber-400"
+        />
+      );
+    } else {
+      stars.push(
+        <Star
+          key={i}
+          size={size}
+          className="text-zinc-500/30"
+        />
+      );
+    }
+  }
+  return stars;
+};
+
 const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
   const t = translations[lang].reviews;
 
-  // Load reviews from localStorage merged with defaults
+  // Load reviews from localStorage, filtering out legacy dummy data
   const [reviews, setReviews] = useState<Review[]>(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+        if (Array.isArray(parsed)) {
+          // Filter out dummy items
+          return parsed.filter(r => !['rev-1', 'rev-2', 'rev-3'].includes(r.id));
         }
       }
     } catch {
       // fallback
     }
-    return initialReviewsData;
+    return [];
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +69,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
     role: '',
     company: '',
     relation: 'Colleague',
-    rating: 5,
+    rating: 5.0,
     message: ''
   });
   const [showToast, setShowToast] = useState(false);
@@ -53,7 +86,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
 
   const avgRating = reviews.length > 0
     ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
-    : '5.0';
+    : '0.0';
 
   const fiveStarPercentage = reviews.length > 0
     ? Math.round((reviews.filter(r => r.rating >= 4).length / reviews.length) * 100)
@@ -92,7 +125,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
         role: '',
         company: '',
         relation: 'Colleague',
-        rating: 5,
+        rating: 5.0,
         message: ''
       });
       setShowToast(true);
@@ -107,6 +140,8 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
       .map(part => part[0]?.toUpperCase())
       .join('');
   };
+
+  const currentDisplayRating = hoverRating !== null ? hoverRating : formData.rating;
 
   return (
     <section id="reviews" className="py-24 relative overflow-hidden">
@@ -137,17 +172,19 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
 
           {/* Action button & Stats Banner */}
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)]">
-              <div className="flex items-center gap-1 text-amber-500 font-black text-lg">
-                <Star size={18} className="fill-amber-400 text-amber-400" />
-                <span>{avgRating}</span>
+            {reviews.length > 0 && (
+              <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)]">
+                <div className="flex items-center gap-1 text-amber-500 font-black text-lg">
+                  <Star size={18} className="fill-amber-400 text-amber-400" />
+                  <span>{avgRating}</span>
+                </div>
+                <div className="h-6 w-px bg-[var(--border)]" />
+                <div className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider leading-tight">
+                  <div>{reviews.length} {t.totalReviews}</div>
+                  <div className="text-emerald-500 font-bold">{fiveStarPercentage}% {lang === 'en' ? 'Satisfaction' : 'Puas'}</div>
+                </div>
               </div>
-              <div className="h-6 w-px bg-[var(--border)]" />
-              <div className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider leading-tight">
-                <div>{reviews.length} {t.totalReviews}</div>
-                <div className="text-emerald-500 font-bold">{fiveStarPercentage}% {lang === 'en' ? 'Satisfaction' : 'Puas'}</div>
-              </div>
-            </div>
+            )}
 
             <button
               onClick={() => setIsModalOpen(true)}
@@ -159,74 +196,99 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
           </div>
         </div>
 
-        {/* Reviews Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reviews.map((r, idx) => (
-            <SpotlightCard
-              key={r.id}
-              className="group card-minimal rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between relative overflow-hidden"
-              spotlightColor="rgba(245, 158, 11, 0.08)"
-              data-aos="fade-up"
-              data-aos-delay={idx * 100}
+        {/* Empty State when no reviews */}
+        {reviews.length === 0 ? (
+          <div 
+            className="text-center py-16 px-6 card-minimal rounded-[2.5rem] border border-dashed border-[var(--border)] max-w-xl mx-auto shadow-sm"
+            data-aos="fade-up"
+          >
+            <div className="w-16 h-16 mx-auto rounded-3xl bg-[var(--icon-bg)] text-[var(--accent)] flex items-center justify-center mb-5 shadow-inner">
+              <Sparkles size={28} />
+            </div>
+            <h3 className="text-xl font-bold tracking-tight text-[var(--text)]">
+              {t.emptyTitle}
+            </h3>
+            <p className="text-xs text-[var(--text-muted)] mt-2 mb-8 max-w-sm mx-auto leading-relaxed">
+              {t.emptyDesc}
+            </p>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--accent)] text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-[var(--accent)]/20"
             >
-              <Quote className="absolute right-6 top-6 text-[var(--border)] opacity-30 group-hover:text-[var(--accent)] group-hover:opacity-20 transition-all duration-500 pointer-events-none" size={48} />
-              
-              <div>
-                {/* Rating Stars & Relation Tag */}
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <div className="flex items-center gap-1 text-amber-400">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        size={15}
-                        className={i < r.rating ? 'fill-amber-400 text-amber-400' : 'text-zinc-600'}
-                      />
-                    ))}
+              <Star size={15} className="fill-white text-white" />
+              <span>{t.writeReview}</span>
+            </button>
+          </div>
+        ) : (
+          /* Reviews Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {reviews.map((r, idx) => (
+              <SpotlightCard
+                key={r.id}
+                className="group card-minimal rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between relative overflow-hidden"
+                spotlightColor="rgba(245, 158, 11, 0.08)"
+                data-aos="fade-up"
+                data-aos-delay={idx * 100}
+              >
+                <Quote className="absolute right-6 top-6 text-[var(--border)] opacity-30 group-hover:text-[var(--accent)] group-hover:opacity-20 transition-all duration-500 pointer-events-none" size={48} />
+                
+                <div>
+                  {/* Rating Stars & Relation Tag */}
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-1">
+                      {renderStars(r.rating, 15)}
+                      <span className="text-xs font-extrabold text-amber-500 ml-1.5">
+                        {r.rating.toFixed(1)}
+                      </span>
+                    </div>
+
+                    {r.relation && (
+                      <span className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[var(--icon-bg)] text-[var(--text-muted)] border border-[var(--border)]">
+                        {r.relation}
+                      </span>
+                    )}
                   </div>
 
-                  {r.relation && (
-                    <span className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[var(--icon-bg)] text-[var(--text-muted)] border border-[var(--border)]">
-                      {r.relation}
-                    </span>
-                  )}
+                  {/* Message */}
+                  <p className="text-xs md:text-sm text-[var(--text)] leading-relaxed italic opacity-90 mb-6">
+                    "{r.message}"
+                  </p>
                 </div>
 
-                {/* Message */}
-                <p className="text-xs md:text-sm text-[var(--text)] leading-relaxed italic opacity-90 mb-6">
-                  "{r.message}"
-                </p>
-              </div>
+                {/* Author footer */}
+                <div className="pt-4 border-t border-[var(--border)] flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[var(--accent)] to-amber-500 text-white flex items-center justify-center font-black text-xs shadow-md">
+                      {getInitials(r.name)}
+                    </div>
+                    <div>
+                      <h4 className="text-xs md:text-sm font-bold tracking-tight text-[var(--text)] line-clamp-1">
+                        {r.name}
+                      </h4>
+                      <p className="text-[10px] text-[var(--text-muted)] line-clamp-1">
+                        {r.role} {r.company ? `• ${r.company}` : ''}
+                      </p>
+                    </div>
+                  </div>
 
-              {/* Author footer */}
-              <div className="pt-4 border-t border-[var(--border)] flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[var(--accent)] to-amber-500 text-white flex items-center justify-center font-black text-xs shadow-md">
-                    {getInitials(r.name)}
-                  </div>
-                  <div>
-                    <h4 className="text-xs md:text-sm font-bold tracking-tight text-[var(--text)] line-clamp-1">
-                      {r.name}
-                    </h4>
-                    <p className="text-[10px] text-[var(--text-muted)] line-clamp-1">
-                      {r.role} {r.company ? `• ${r.company}` : ''}
-                    </p>
-                  </div>
+                  <span className="text-[9px] text-[var(--text-muted)] opacity-60 shrink-0 font-medium">
+                    {r.date}
+                  </span>
                 </div>
-
-                <span className="text-[9px] text-[var(--text-muted)] opacity-60 shrink-0 font-medium">
-                  {r.date}
-                </span>
-              </div>
-            </SpotlightCard>
-          ))}
-        </div>
+              </SpotlightCard>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Modal Form */}
+      {/* Modal Form with Subtle Transparency */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/35 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setIsModalOpen(false)}
+        >
           <div 
-            className="w-full max-w-lg card-minimal rounded-[2.5rem] p-6 sm:p-8 shadow-2xl border border-[var(--border)] relative bg-[var(--bg)] text-[var(--text)] overflow-hidden"
+            className="w-full max-w-lg card-minimal rounded-[2.5rem] p-6 sm:p-8 shadow-2xl border border-[var(--border)] relative bg-[var(--bg)]/95 backdrop-blur-xl text-[var(--text)] overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
             {/* Close button */}
@@ -303,34 +365,68 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                 </div>
               </div>
 
-              {/* Star Rating Selector */}
+              {/* Half-Star Rating Selector */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider mb-1.5 opacity-80">
-                  {t.ratingLabel}
+                  {t.ratingLabel}: <span className="text-amber-500 font-extrabold text-sm ml-1">{currentDisplayRating.toFixed(1)} / 5.0</span>
                 </label>
-                <div className="flex items-center gap-2 py-1">
-                  {[1, 2, 3, 4, 5].map((star) => {
-                    const active = (hoverRating !== null ? hoverRating : formData.rating) >= star;
+                
+                {/* Visual interactive half-star area */}
+                <div className="flex items-center gap-1.5 py-1">
+                  {[1, 2, 3, 4, 5].map((starIdx) => {
+                    const fullActive = currentDisplayRating >= starIdx;
+                    const halfActive = !fullActive && currentDisplayRating >= starIdx - 0.5;
+
                     return (
-                      <button
-                        type="button"
-                        key={star}
-                        onClick={() => setFormData({ ...formData, rating: star })}
-                        onMouseEnter={() => setHoverRating(star)}
-                        onMouseLeave={() => setHoverRating(null)}
-                        className="p-1 hover:scale-125 transition-transform"
-                        aria-label={`${star} star`}
+                      <div 
+                        key={starIdx}
+                        className="relative cursor-pointer hover:scale-125 transition-transform p-0.5"
                       >
-                        <Star
-                          size={24}
-                          className={active ? 'fill-amber-400 text-amber-400' : 'text-zinc-600'}
+                        {/* Star render */}
+                        {fullActive ? (
+                          <Star size={26} className="fill-amber-400 text-amber-400" />
+                        ) : halfActive ? (
+                          <StarHalf size={26} className="fill-amber-400 text-amber-400" />
+                        ) : (
+                          <Star size={26} className="text-zinc-600/40" />
+                        )}
+
+                        {/* Invisible left half hit area for x.5 */}
+                        <div
+                          className="absolute inset-y-0 left-0 w-1/2 z-10"
+                          onMouseEnter={() => setHoverRating(starIdx - 0.5)}
+                          onMouseLeave={() => setHoverRating(null)}
+                          onClick={() => setFormData({ ...formData, rating: starIdx - 0.5 })}
                         />
-                      </button>
+
+                        {/* Invisible right half hit area for x.0 */}
+                        <div
+                          className="absolute inset-y-0 right-0 w-1/2 z-10"
+                          onMouseEnter={() => setHoverRating(starIdx)}
+                          onMouseLeave={() => setHoverRating(null)}
+                          onClick={() => setFormData({ ...formData, rating: starIdx })}
+                        />
+                      </div>
                     );
                   })}
-                  <span className="text-xs font-bold text-amber-500 ml-2">
-                    {formData.rating} / 5 Stars
-                  </span>
+
+                  {/* Quick Preset Buttons for Half Stars */}
+                  <div className="flex items-center gap-1 ml-3 border-l border-[var(--border)] pl-3">
+                    {[5.0, 4.5, 4.0, 3.5, 3.0].map((val) => (
+                      <button
+                        type="button"
+                        key={val}
+                        onClick={() => setFormData({ ...formData, rating: val })}
+                        className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${
+                          formData.rating === val
+                            ? 'bg-amber-400 text-black shadow-sm'
+                            : 'bg-[var(--icon-bg)] text-[var(--text-muted)] hover:text-[var(--text)]'
+                        }`}
+                      >
+                        {val.toFixed(1)}★
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 

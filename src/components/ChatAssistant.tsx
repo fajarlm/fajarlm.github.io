@@ -15,6 +15,74 @@ interface ChatAssistantProps {
   lang: Language;
 }
 
+// Rich Formatter for AI responses (parses bold, lists, bullets)
+const FormattedMessage: React.FC<{ text: string; isUser: boolean }> = ({ text, isUser }) => {
+  if (isUser) {
+    return <span className="whitespace-pre-line font-medium">{text}</span>;
+  }
+
+  const lines = text.split('\n');
+
+  const renderFormattedLine = (str: string) => {
+    const parts = str.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, pIdx) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <strong key={pIdx} className="font-extrabold text-[var(--text)] text-amber-500 dark:text-amber-400">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
+
+  return (
+    <div className="space-y-1.5 leading-relaxed text-xs">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={idx} className="h-1" />;
+        }
+
+        // Numbered list: 1. 2. 3.
+        const numberedMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+        if (numberedMatch) {
+          return (
+            <div key={idx} className="flex items-start gap-2.5 pl-0.5 mt-1">
+              <span className="w-4 h-4 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                {numberedMatch[1]}
+              </span>
+              <div className="flex-1">
+                {renderFormattedLine(numberedMatch[2])}
+              </div>
+            </div>
+          );
+        }
+
+        // Bullet point: • or -
+        if (trimmed.startsWith('•') || trimmed.startsWith('-')) {
+          const bulletText = trimmed.replace(/^[•\-]\s*/, '');
+          return (
+            <div key={idx} className="flex items-start gap-2.5 pl-1 mt-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0 mt-1.5"></span>
+              <div className="flex-1">
+                {renderFormattedLine(bulletText)}
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <p key={idx} className="text-[var(--text)] opacity-95">
+            {renderFormattedLine(trimmed)}
+          </p>
+        );
+      })}
+    </div>
+  );
+};
+
 const ChatAssistant: React.FC<ChatAssistantProps> = ({ lang }) => {
   const t = translations[lang].chat;
   const [isOpen, setIsOpen] = useState(false);
@@ -44,72 +112,69 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ lang }) => {
     }
   }, [messages, isTyping, isOpen, activeTab]);
 
-  // Knowledge base answers engine
+  // Enhanced Knowledge base answers engine
   const generateAssistantReply = (query: string): string => {
     const q = query.toLowerCase();
 
     // 1. Skills / Keahlian
-    if (q.includes('skill') || q.includes('keahlian') || q.includes('teknologi') || q.includes('stack') || q.includes('tech')) {
-      const webSkills = 'React, Next.js, Vue 3, Laravel, Tailwind CSS, TypeScript, Express.js';
-      const mobileSkills = 'Flutter, Dart (Android & iOS)';
-      const dbSkills = 'MySQL, PostgreSQL, MongoDB, Prisma ORM, Supabase';
+    if (q.includes('skill') || q.includes('keahlian') || q.includes('teknologi') || q.includes('stack') || q.includes('tech') || q.includes('bisa apa')) {
       if (lang === 'en') {
-        return `Fajar's core tech stack covers both web and mobile engineering:\n• **Frontend & Web:** ${webSkills}\n• **Mobile Development:** ${mobileSkills}\n• **Backend & Database:** ${dbSkills}\n• **Tools:** Git, Postman, Figma, Docker basics.`;
+        return `Fajar specializes in fullstack and mobile software engineering:\n• **Frontend Web:** React, Next.js, Vue 3, Tailwind CSS, TypeScript, HTML5/CSS3\n• **Mobile App:** Flutter & Dart (Cross-platform Android & iOS)\n• **Backend & APIs:** Laravel, Node.js, Express.js, RESTful APIs, Livewire\n• **Databases:** MySQL, PostgreSQL, MongoDB, Prisma ORM, Supabase\n• **Tools & Workflow:** Git & GitHub, Postman, Figma, Linux/VPS`;
       } else {
-        return `Keahlian teknis utama Fajar mencakup pengembangan web dan mobile:\n• **Frontend & Web:** ${webSkills}\n• **Mobile Development:** ${mobileSkills}\n• **Backend & Database:** ${dbSkills}\n• **Tools:** Git, Postman, Figma, dan Docker basics.`;
+        return `Keahlian teknis utama Fajar Kusuma mencakup pengembangan web dan mobile modern:\n• **Frontend Web:** React, Next.js, Vue 3, Tailwind CSS, TypeScript, HTML5/CSS3\n• **Aplikasi Mobile:** Flutter & Dart (Cross-platform Android & iOS)\n• **Backend & API:** Laravel, Node.js, Express.js, RESTful API, Livewire\n• **Database:** MySQL, PostgreSQL, MongoDB, Prisma ORM, Supabase\n• **Tools & Workflow:** Git & GitHub, Postman, Figma, Linux/VPS`;
       }
     }
 
     // 2. Mobile projects (Quranic & AeroWeather & GOTOH)
-    if (q.includes('mobile') || q.includes('flutter') || q.includes('apk') || q.includes('quran') || q.includes('weather') || q.includes('cuaca')) {
+    if (q.includes('mobile') || q.includes('flutter') || q.includes('apk') || q.includes('quran') || q.includes('weather') || q.includes('cuaca') || q.includes('gotoh')) {
       if (lang === 'en') {
-        return `Fajar has built several production-ready Flutter mobile applications with direct APK downloads:\n1. **Quranic Mobile**: Authentic Uthmani scripture, audio recitations by global Qari, Kemenag Indonesian translation, and SQLite offline bookmarking.\n2. **AeroWeather Mobile**: Real-time atmospheric & AQI telemetry powered by OpenWeather API with glassmorphism UI.\n3. **GOTOH Mobile**: Community workout streak tracking, calorie expenditure, and trainer consultation.\n\nYou can download the APKs directly from the Projects section!`;
+        return `Fajar has created production-ready Flutter mobile applications with APK release downloads:\n1. **Quranic Mobile**: Authentic Uthmani scripture, audio recitations by global Qari, official Kemenag Indonesian translation, and SQLite offline bookmarking.\n2. **AeroWeather Mobile**: Real-time atmospheric & AQI telemetry powered by OpenWeather API with glassmorphism UI.\n3. **GOTOH Mobile**: Community workout streak tracking, calorie expenditure telemetry, and trainer consultation.\n\nYou can click **"Unduh APK"** on the mobile project cards to try them directly!`;
       } else {
-        return `Fajar memiliki beberapa proyek aplikasi mobile Flutter dengan rilis file APK yang bisa diunduh langsung:\n1. **Quranic Mobile**: Aplikasi Al-Quran dengan tipografi Utsmani, streaming murattal audio, terjemahan resmi Kemenag RI, dan bookmarking offline SQLite.\n2. **AeroWeather Mobile**: Pemantau cuaca dan kualitas udara (AQI) real-time dengan OpenWeather API dan UI glassmorphism.\n3. **GOTOH Mobile**: Aplikasi pelacak kalori, streak olahraga komunitas, dan konsultasi trainer.\n\nAnda bisa langsung mengunduh APK-nya di bagian kartu Proyek!`;
+        return `Fajar memiliki beberapa proyek aplikasi mobile Flutter dengan rilis file APK yang bisa diunduh langsung:\n1. **Quranic Mobile**: Aplikasi Al-Quran dengan tipografi Utsmani, streaming murattal audio, terjemahan resmi Kemenag RI, dan bookmarking offline SQLite.\n2. **AeroWeather Mobile**: Pemantau cuaca dan kualitas udara (AQI) real-time dengan OpenWeather API dan UI glassmorphism.\n3. **GOTOH Mobile**: Aplikasi pelacak kalori, streak olahraga komunitas, dan konsultasi trainer.\n\nAnda bisa langsung mengklik tombol **"Unduh APK"** pada kartu proyek untuk menginstal aplikasinya!`;
       }
     }
 
     // 3. Web Projects (Wishora, Moneta, DocMorph, AbsensiKu, Chen ERD)
-    if (q.includes('web') || q.includes('proyek') || q.includes('project') || q.includes('moneta') || q.includes('wishora') || q.includes('docmorph') || q.includes('chen')) {
+    if (q.includes('web') || q.includes('proyek') || q.includes('project') || q.includes('moneta') || q.includes('wishora') || q.includes('docmorph') || q.includes('chen') || q.includes('absensi')) {
       if (lang === 'en') {
-        return `Key web projects by Fajar include:\n• **Wishora** (Next.js, Tailwind, Framer Motion) — Interactive storytelling & virtual candle blowing platform.\n• **Moneta** (Next.js, Supabase, Gemini AI) — AI-driven personal finance & expense tracking dashboard.\n• **DocMorph Studio** (WASM, Next.js) — In-browser local document converter without server uploads.\n• **Chen ERD Generator** (React, Canvas/SVG) — Interactive SQL to Peter Chen notation diagram modeler.\n• **AbsensiKu v2.0** (Laravel, Livewire, MySQL) — Role-based school attendance telemetry system.`;
+        return `Highlights of Fajar's featured web platforms:\n• **Wishora** (Next.js, Framer Motion) — Interactive digital greeting cards & virtual candle blowing.\n• **Moneta** (Next.js, Supabase, Gemini AI) — AI-driven personal finance dashboard with real-time budget tracking.\n• **DocMorph Studio** (WASM, Next.js) — In-browser local neural document converter.\n• **Chen ERD Generator** (React, Canvas/SVG) — Interactive SQL to Peter Chen notation diagram modeler.\n• **AbsensiKu v2.0** (Laravel, Livewire, MySQL) — Role-based real-time school attendance management system.`;
       } else {
-        return `Beberapa proyek web unggulan Fajar antara lain:\n• **Wishora** (Next.js, Tailwind, Framer Motion) — Platform kartu ucapan interaktif dengan tiup lilin virtual.\n• **Moneta** (Next.js, Supabase, Gemini AI) — Dashboard keuangan pribadi bertenaga kecerdasan buatan.\n• **DocMorph Studio** (WASM, Next.js) — Pengonversi dokumen lokal di browser bertenaga WebAssembly.\n• **Chen ERD Generator** (React, Canvas/SVG) — Generator diagram ERD notasi Peter Chen dari skema SQL.\n• **AbsensiKu v2.0** (Laravel, Livewire, MySQL) — Sistem absensi sekolah terintegrasi dengan hak akses peran.`;
+        return `Berikut beberapa proyek web unggulan yang telah dibangun Fajar:\n• **Wishora** (Next.js, Framer Motion) — Platform kartu ucapan interaktif dengan fitur tiup lilin virtual.\n• **Moneta** (Next.js, Supabase, Gemini AI) — Dashboard keuangan pribadi cerdas bertenaga AI dan analitik anggaran.\n• **DocMorph Studio** (WASM, Next.js) — Pengonversi dokumen multi-format di browser tanpa upload server.\n• **Chen ERD Generator** (React, Canvas/SVG) — Generator diagram ERD notasi Peter Chen interaktif dari skema SQL.\n• **AbsensiKu v2.0** (Laravel, Livewire, MySQL) — Sistem manajemen presensi sekolah real-time multi-role.`;
       }
     }
 
     // 4. Internship / Experience
     if (q.includes('magang') || q.includes('intern') || q.includes('pengalaman') || q.includes('experience') || q.includes('surya') || q.includes('kerja')) {
       if (lang === 'en') {
-        return `Fajar completed a Frontend Developer Internship at **PT. Surya Manggala Informatika** (Jul 2025 - Dec 2025). During his tenure, he built modular Vue 3 Composition API components and implemented dual-language (EN/ID) internationalization across key enterprise modules. He also works on various freelance fullstack client projects.`;
+        return `Fajar has solid professional experience:\n• **Frontend Developer Intern @ PT. Surya Manggala Informatika** (Jul 2025 - Dec 2025):\n  - Built modular Vue 3 components with the Composition API.\n  - Implemented dual-language UI internationalization (i18n EN/ID) across key modules.\n• **Fullstack Web Developer (Freelance)** (2024 - Present):\n  - Delivering custom responsive web applications for various business clients with Laravel and Next.js.`;
       } else {
-        return `Fajar telah menyelesaikan program Magang sebagai Frontend Developer di **PT. Surya Manggala Informatika** (Juli 2025 - Desember 2025). Tanggung jawab utamanya meliputi pengembangan komponen modular Vue 3 dengan Composition API dan implementasi lokalisasi UI internasional (i18n EN/ID) untuk modul enterprise. Fajar juga aktif mengerjakan proyek freelance klien.`;
+        return `Pengalaman kerja dan profesional Fajar:\n• **Frontend Developer Magang @ PT. Surya Manggala Informatika** (Juli 2025 - Desember 2025):\n  - Mengembangkan komponen modular Vue 3 menggunakan Composition API.\n  - Mengimplementasikan lokalisasi UI internasional (i18n EN/ID) untuk modul perusahaan.\n• **Fullstack Web Developer (Freelance)** (2024 - Sekarang):\n  - Membangun berbagai aplikasi web custom untuk klien menggunakan Laravel, Next.js, dan Tailwind CSS.`;
       }
     }
 
     // 5. Contact / Hire / WhatsApp
-    if (q.includes('kontak') || q.includes('contact') || q.includes('hubungi') || q.includes('hire') || q.includes('wa') || q.includes('whatsapp') || q.includes('email') || q.includes('kerja sama') || q.includes('freelance') || q.includes('rate')) {
+    if (q.includes('kontak') || q.includes('contact') || q.includes('hubungi') || q.includes('hire') || q.includes('wa') || q.includes('whatsapp') || q.includes('email') || q.includes('kerja sama') || q.includes('freelance') || q.includes('rate') || q.includes('harga')) {
       if (lang === 'en') {
-        return `Fajar is currently open for **internship, junior software engineering roles, and freelance opportunities**!\nYou can reach out directly:\n• **WhatsApp:** +62 857-7903-9757 (or switch to the "WhatsApp Direct" tab above)\n• **Email:** kusumafajar080802@gmail.com\n• **LinkedIn:** in/fajar-kusuma-2f88`;
+        return `Fajar is actively open for **internships, junior developer roles, and freelance projects**!\nYou can reach him directly through:\n• **WhatsApp:** +62 857-7903-9757 (switch to the "WhatsApp Direct" tab above!)\n• **Email:** kusumafajar080802@gmail.com\n• **LinkedIn:** linkedin.com/in/fajar-kusuma-2f88/\n• **GitHub:** github.com/fajarlm`;
       } else {
-        return `Fajar saat ini sangat terbuka untuk **posisi magang, junior developer, maupun proyek freelance**!\nAnda bisa langsung menghubungi Fajar melalui:\n• **WhatsApp:** +62 857-7903-9757 (atau klik tab "WhatsApp Langsung" di atas)\n• **Email:** kusumafajar080802@gmail.com\n• **LinkedIn:** in/fajar-kusuma-2f88`;
+        return `Fajar saat ini sangat terbuka untuk **posisi magang, junior developer, maupun proyek freelance**!\nAnda bisa langsung menghubungi Fajar melalui:\n• **WhatsApp:** +62 857-7903-9757 (atau klik tab "WhatsApp Langsung" di atas!)\n• **Email:** kusumafajar080802@gmail.com\n• **LinkedIn:** linkedin.com/in/fajar-kusuma-2f88/\n• **GitHub:** github.com/fajarlm`;
       }
     }
 
     // 6. About Fajar & School
-    if (q.includes('siapa') || q.includes('who') || q.includes('tentang') || q.includes('about') || q.includes('sekolah') || q.includes('school') || q.includes('wikrama')) {
+    if (q.includes('siapa') || q.includes('who') || q.includes('tentang') || q.includes('about') || q.includes('sekolah') || q.includes('school') || q.includes('wikrama') || q.includes('fajar')) {
       if (lang === 'en') {
-        return `Fajar Kusuma is a Software Engineering student at SMK Wikrama Bogor with a strong focus on real-world web and mobile development. He possesses practical experience with Laravel, React, Next.js, Vue 3, and Flutter.`;
+        return `Fajar Kusuma is a Software Engineering student at SMK Wikrama Bogor passionate about turning ideas into intuitive digital products. He combines strong fullstack fundamentals with mobile engineering and loves clean code architecture.`;
       } else {
-        return `Fajar Kusuma adalah siswa jurusan Rekayasa Perangkat Lunak (RPL) di SMK Wikrama Bogor yang berfokus pada pengembangan produk nyata (web dan mobile). Fajar memiliki keahlian praktis dalam Laravel, React, Next.js, Vue 3, dan Flutter.`;
+        return `Fajar Kusuma adalah siswa jurusan Rekayasa Perangkat Lunak (RPL) di SMK Wikrama Bogor. Fajar berfokus pada pengembangan produk web dan mobile nyata dengan arsitektur kode yang rapi, UI/UX interaktif, dan performa tinggi.`;
       }
     }
 
     // Default polite response
     if (lang === 'en') {
-      return `Thank you for asking! Fajar is a Fullstack & Mobile Developer skilled in React, Next.js, Laravel, and Flutter. You can explore his projects, download mobile APKs, or contact him directly via the WhatsApp tab above. Feel free to ask about his skills, projects, or background!`;
+      return `Thank you for reaching out! Fajar is a Fullstack & Mobile Developer skilled in React, Next.js, Laravel, and Flutter. You can explore his projects, download mobile APKs, or contact him directly via the WhatsApp tab above. What else would you like to know about Fajar?`;
     } else {
-      return `Terima kasih atas pertanyaannya! Fajar adalah Fullstack & Mobile Developer yang menguasai React, Next.js, Laravel, dan Flutter. Anda bisa melihat karya proyeknya di portofolio ini, mengunduh file APK mobile, atau langsung chat Fajar via tab WhatsApp di atas. Ada hal spesifik lain yang ingin Anda ketahui?`;
+      return `Terima kasih telah bertanya! Fajar adalah Fullstack & Mobile Developer yang menguasai React, Next.js, Laravel, dan Flutter. Anda bisa melihat proyeknya di portofolio ini, mengunduh file APK mobile, atau langsung chat Fajar via tab WhatsApp di atas. Ada hal spesifik lain yang ingin Anda ketahui?`;
     }
   };
 
@@ -143,10 +208,20 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ lang }) => {
 
   const handleOpenWhatsApp = (e: React.FormEvent) => {
     e.preventDefault();
-    const namePart = waName.trim() ? `Halo Fajar, perkenalkan saya ${waName.trim()}.\n\n` : 'Halo Fajar,\n\n';
-    const messagePart = waMessage.trim() || 'Saya melihat portofolio Anda dan tertarik untuk mendiskusikan peluang kerja sama / proyek.';
-    const fullText = encodeURIComponent(`${namePart}${messagePart}`);
-    window.open(`https://wa.me/6285779039757?text=${fullText}`, '_blank');
+    const greeting = waName.trim()
+      ? `Halo Fajar, perkenalkan saya ${waName.trim()}.`
+      : 'Halo Fajar,';
+
+    const defaultContent = lang === 'en'
+      ? 'I came across your portfolio and would like to discuss an opportunity / project.'
+      : 'Saya melihat portofolio Anda dan tertarik mendiskusikan peluang kerja sama / proyek.';
+
+    const content = waMessage.trim() || defaultContent;
+    
+    // Explicit double newline (\n\n) so WhatsApp renders clean paragraph breaks!
+    const fullText = `${greeting}\n\n${content}`;
+    const encoded = encodeURIComponent(fullText);
+    window.open(`https://wa.me/6285779039757?text=${encoded}`, '_blank');
   };
 
   const promptPills = [
@@ -189,12 +264,12 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ lang }) => {
         )}
       </div>
 
-      {/* Floating Chat Modal */}
+      {/* Floating Chat Modal with Soft Transparency */}
       {isOpen && (
-        <div className="fixed bottom-6 right-4 sm:right-6 z-[90] w-[calc(100vw-2rem)] sm:w-[400px] h-[580px] max-h-[85vh] card-minimal rounded-[2.5rem] shadow-2xl border border-[var(--border)] flex flex-col bg-[var(--bg)] text-[var(--text)] overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-6 right-4 sm:right-6 z-[90] w-[calc(100vw-2rem)] sm:w-[410px] h-[580px] max-h-[85vh] card-minimal rounded-[2.5rem] shadow-2xl border border-[var(--border)] flex flex-col bg-[var(--bg)]/95 backdrop-blur-xl text-[var(--text)] overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300">
           
           {/* Header */}
-          <div className="p-4 sm:p-5 bg-[var(--icon-bg)] border-b border-[var(--border)] flex items-center justify-between shrink-0">
+          <div className="p-4 sm:p-5 bg-[var(--icon-bg)]/80 border-b border-[var(--border)] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[var(--accent)] to-blue-500 text-white flex items-center justify-center font-bold text-sm shadow-md">
@@ -254,13 +329,13 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ lang }) => {
                     className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-3 leading-relaxed whitespace-pre-line ${
+                      className={`max-w-[88%] rounded-2xl px-4 py-3 leading-relaxed ${
                         m.sender === 'user'
                           ? 'bg-[var(--accent)] text-white font-medium rounded-br-sm shadow-md'
-                          : 'bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)] rounded-bl-sm'
+                          : 'bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)] rounded-bl-sm shadow-sm'
                       }`}
                     >
-                      {m.text}
+                      <FormattedMessage text={m.text} isUser={m.sender === 'user'} />
                     </div>
                     <span className="text-[9px] text-[var(--text-muted)] opacity-60 mt-1 px-1">
                       {m.timestamp}
@@ -301,7 +376,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ lang }) => {
                   e.preventDefault();
                   handleSendMessage();
                 }}
-                className="p-3 bg-[var(--icon-bg)] border-t border-[var(--border)] flex items-center gap-2 shrink-0"
+                className="p-3 bg-[var(--icon-bg)]/80 border-t border-[var(--border)] flex items-center gap-2 shrink-0"
               >
                 <input
                   type="text"
@@ -361,6 +436,9 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ lang }) => {
                       placeholder={t.waMsgPlaceholder}
                       className="w-full p-3 rounded-xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-emerald-500 transition-all resize-none"
                     />
+                    <p className="text-[9px] text-[var(--text-muted)] opacity-70 mt-1 italic">
+                      Pesan akan otomatis diformat dengan salam pembuka di baris pertama dan isi pesan di baris baru.
+                    </p>
                   </div>
 
                   <button

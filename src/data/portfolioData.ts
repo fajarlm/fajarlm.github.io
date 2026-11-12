@@ -257,38 +257,7 @@ export const experiencesData: ExperienceItem[] = [
   },
 ];
 
-export const initialReviewsData: Review[] = [
-  {
-    id: 'rev-1',
-    name: 'Rizky Pratama',
-    role: 'Frontend Lead',
-    company: 'PT. Surya Manggala Informatika',
-    relation: 'Lead / Supervisor',
-    rating: 5,
-    message: 'Fajar menunjukkan pemahaman yang sangat kuat pada Vue 3 Composition API dan implementasi UI i18n selama masa magang. Cepat belajar, komunikatif, dan selalu menulis kode yang rapi serta terstruktur.',
-    date: '10 Nov 2025'
-  },
-  {
-    id: 'rev-2',
-    name: 'Arif Hidayat',
-    role: 'Project Owner',
-    company: 'Wishora & AbsensiKu',
-    relation: 'Client',
-    rating: 5,
-    message: 'Sangat puas bekerja sama dengan Fajar. Proyek diselesaikan tepat waktu, responsif terhadap revisi, dan hasil UI/UX-nya interaktif melebihi ekspektasi kami. Recommended developer!',
-    date: '28 Des 2025'
-  },
-  {
-    id: 'rev-3',
-    name: 'Dewi Sartika',
-    role: 'UI/UX Designer',
-    company: 'Tech Studio',
-    relation: 'Colleague',
-    rating: 5,
-    message: 'Kolaborasi dengan Fajar sangat menyenangkan. Slicing dari Figma ke kode React dan Flutter selalu presisi (pixel-perfect) dan animasinya halus berkat pemahamannya yang dalam terhadap user experience.',
-    date: '15 Jan 2026'
-  }
-];
+export const initialReviewsData: Review[] = [];
 
 export const socialLinks = {
   github: "https://github.com/fajarlm",

@@ -105,7 +105,10 @@ const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
       </div>
 
       {selectedFile && (
-        <div className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-black/95 backdrop-blur-xl animate-in fade-in duration-300">
+        <div 
+          onClick={() => setSelectedFile(null)}
+          className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-black/50 backdrop-blur-md animate-in fade-in duration-300"
+        >
           <div className="absolute top-0 w-full flex justify-between items-center p-8 z-30">
             <div className="flex items-center gap-4 text-white/60">
               {isPDF(selectedFile) ? <FileText size={20} /> : <Award size={20} />}
@@ -119,7 +122,7 @@ const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
             </button>
           </div>
           
-          <div className="w-full h-full max-w-6xl p-6 md:p-20 flex items-center justify-center">
+          <div className="w-full h-full max-w-6xl p-6 md:p-20 flex items-center justify-center" onClick={e => e.stopPropagation()}>
             {isPDF(selectedFile) ? (
               <iframe 
                 src={selectedFile} 
