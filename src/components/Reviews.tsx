@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, StarHalf, MessageSquarePlus, Quote, X, CheckCircle2, User, Building, HeartHandshake, Sparkles } from 'lucide-react';
+import { Star, StarHalf, MessageSquarePlus, Quote, X, CheckCircle2, User, Building, HeartHandshake } from 'lucide-react';
 import { translations } from '../data/portfolioData';
 import SpotlightCard from './ui/SpotlightCard';
 import type { Language, Review } from '../types';
@@ -202,9 +202,6 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
             className="text-center py-16 px-6 card-minimal rounded-[2.5rem] border border-dashed border-[var(--border)] max-w-xl mx-auto shadow-sm"
             data-aos="fade-up"
           >
-            <div className="w-16 h-16 mx-auto rounded-3xl bg-[var(--icon-bg)] text-[var(--accent)] flex items-center justify-center mb-5 shadow-inner">
-              <Sparkles size={28} />
-            </div>
             <h3 className="text-xl font-bold tracking-tight text-[var(--text)]">
               {t.emptyTitle}
             </h3>

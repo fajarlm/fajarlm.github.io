@@ -9,6 +9,7 @@ import monetaImg from '../assets/projects/moneta.png';
 import monetaDoc from '../assets/projects/moneta-doc.png';
 import docmorphImg from '../assets/projects/docmorph.png';
 import docmorphDoc from '../assets/projects/docmorph-doc.png';
+import docmorphDoc2 from '../assets/projects/docmorph-doc2.png';
 import gotohImg from '../assets/projects/gotoh.png';
 import gotohDoc from '../assets/projects/gotoh-doc.png';
 import chenErdImg from '../assets/projects/chen-erd.png';
@@ -100,7 +101,7 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['Next.js', 'WASM', 'Tailwind', 'TypeScript', 'Web APIs'],
     img: docmorphImg,
-    gallery: [docmorphDoc],
+    gallery: [docmorphDoc, docmorphDoc2],
     github: 'https://github.com/fajarlm/convert-file',
     demo: 'https://convert-file-vert.vercel.app'
   },
