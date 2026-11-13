@@ -17,6 +17,8 @@ import Reviews from './components/Reviews';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ChatAssistant from './components/ChatAssistant';
+import Maintenance from './components/Maintenance';
+import { siteConfig } from './config/siteConfig';
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme) || 'light');
@@ -26,6 +28,7 @@ export default function App() {
   });
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [bypassedMaintenance, setBypassedMaintenance] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: 'ease-out-quad' });
@@ -44,6 +47,19 @@ export default function App() {
   }, [lang]);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Mode Maintenance (Bisa diaktifkan melalui src/config/siteConfig.ts)
+  if (siteConfig.maintenanceMode && !bypassedMaintenance) {
+    return (
+      <Maintenance 
+        lang={lang} 
+        setLang={setLang} 
+        theme={theme} 
+        setTheme={setTheme} 
+        onBypass={() => setBypassedMaintenance(true)} 
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen transition-all duration-500 bg-[var(--bg)] overflow-x-hidden text-[var(--text)] selection:bg-[var(--accent)] selection:text-[var(--bg)]">
@@ -69,7 +85,7 @@ export default function App() {
             <TechStack lang={lang} />
             <Projects lang={lang} />
             <Certificates lang={lang} />
-            <Reviews lang={lang} />
+            {siteConfig.features.reviews && <Reviews lang={lang} />}
           </div>
 
           <Contact lang={lang} />
@@ -77,9 +93,9 @@ export default function App() {
 
         <Footer lang={lang} />
         
-        <ChatAssistant lang={lang} />
+        {siteConfig.features.chatAssistant && <ChatAssistant lang={lang} />}
 
-        <Dock lang={lang} />
+        {siteConfig.features.floatingDock && <Dock lang={lang} />}
 
         <button 
           onClick={scrollToTop} 
