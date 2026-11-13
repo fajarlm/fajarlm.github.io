@@ -26,20 +26,19 @@ import quranicMobileDoc1 from '../assets/projects/quranic-mobile-doc1.png';
 import quranicMobileDoc2 from '../assets/projects/quranic-mobile-doc2.png';
 
 // Certificate Imports
-import certReactPemula from '../assets/sertifikat/br-pemula.pdf';
+import certBackendPemula from '../assets/sertifikat/br-pemula.pdf';
 import certEnglish from '../assets/sertifikat/english.pdf';
-import certFeBeDasar from '../assets/sertifikat/fe&be_dasar.pdf';
-import certFe from '../assets/sertifikat/sertif-fe.pdf';
+import certFrontendPemula from '../assets/sertifikat/fe&be_dasar.pdf';
+import certDasarWeb2024 from '../assets/sertifikat/sertif-fe.pdf';
 import certGit from '../assets/sertifikat/sertif-git.pdf';
 import certJs from '../assets/sertifikat/sertif-js.pdf';
 import certLogic from '../assets/sertifikat/logic.pdf';
-import certFundamental from '../assets/sertifikat/fundamental.pdf';
-import certSoft from '../assets/sertifikat/soft.pdf';
+import certFundamentalFrontend from '../assets/sertifikat/fundamental.pdf';
+import certSoftSkills from '../assets/sertifikat/soft.pdf';
 import certFinancial from '../assets/sertifikat/financial.pdf';
-import certFajar1 from '../assets/sertifikat/cert-fajar-kusuma.pdf';
-import certFajar2 from '../assets/sertifikat/IGDX.pdf';
-import certFajar3 from '../assets/sertifikat/Fajar_kusuma-12410279.pdf';
-import certCourse from '../assets/sertifikat/sertifikat_course_123_4363478_230125134956.pdf';
+import certK3 from '../assets/sertifikat/cert-fajar-kusuma.pdf';
+import certIGDX from '../assets/sertifikat/IGDX.pdf';
+import certDasarWeb2025 from '../assets/sertifikat/sertifikat_course_123_4363478_230125134956.pdf';
 
 export const techStack: Skill[] = [
   { name: 'HTML5', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg', desc: { en: 'Markup & Page Structure', id: 'Markup & Struktur Halaman' } },
@@ -202,21 +201,19 @@ export const projectsData: Project[] = [
 ];
 
 export const certificatesData: Certificate[] = [
-  { id: 1, title: 'Belajar Dasar Pemrograman Web', issuer: 'Dicoding Academy', date: '2024', file: certFe },
-  { id: 2, title: 'Belajar Dasar JavaScript', issuer: 'Dicoding Academy', date: '2024', file: certJs },
-  { id: 3, title: 'Belajar Membuat Aplikasi Web dengan React', issuer: 'Dicoding Academy', date: '2024', file: certReactPemula },
-  { id: 4, title: 'Frontend Developer Career Path', issuer: 'Dicoding', date: '2024', file: certFe },
-  { id: 5, title: 'Git & GitHub Certification', issuer: 'Digital Academy', date: '2024', file: certGit },
-  { id: 6, title: 'Programming Logic Certification', issuer: 'Course Academy', date: '2024', file: certLogic },
-  { id: 7, title: 'Programming Fundamental', issuer: 'Tech Institute', date: '2024', file: certFundamental },
-  { id: 8, title: 'Frontend & Backend Development Basics', issuer: 'Fullstack Academy', date: '2024', file: certFeBeDasar },
-  { id: 9, title: 'English Proficiency Certificate', issuer: 'Language Center', date: '2024', file: certEnglish },
-  { id: 10, title: 'Financial Literacy for Developers', issuer: 'Business School', date: '2024', file: certFinancial },
-  { id: 11, title: 'Professional Soft Skills', issuer: 'HR Development', date: '2024', file: certSoft },
-  { id: 12, title: 'Official Web Developer Credential', issuer: 'BNSP / National Body', date: '2024', file: certFajar1 },
-  { id: 12, title: 'Game Development Certification', issuer: 'IGDX', date: '2024', file: certFajar2 },
-  { id: 13, title: 'Software Engineering Excellence', issuer: 'Vocational School', date: '2024', file: certFajar3 },
-  { id: 14, title: 'Fullstack Web Development Course', issuer: 'Online Learning Platform', date: '2024', file: certCourse }
+  { id: 1, title: 'Belajar Dasar Pemrograman Web', issuer: 'Dicoding Academy', date: '2025', file: certDasarWeb2025 },
+  { id: 2, title: 'Belajar Dasar Pemrograman Web', issuer: 'Dicoding Academy', date: '2024', file: certDasarWeb2024 },
+  { id: 3, title: 'Belajar Dasar Pemrograman JavaScript', issuer: 'Dicoding Academy', date: '2025', file: certJs },
+  { id: 4, title: 'Belajar Fundamental Front-End Web Development', issuer: 'Dicoding Academy', date: '2025', file: certFundamentalFrontend },
+  { id: 5, title: 'Belajar Membuat Front-End Web untuk Pemula', issuer: 'Dicoding Academy', date: '2025', file: certFrontendPemula },
+  { id: 6, title: 'Belajar Back-End Pemula dengan JavaScript', issuer: 'Dicoding Academy', date: '2025', file: certBackendPemula },
+  { id: 7, title: 'Belajar Dasar Git dengan GitHub', issuer: 'Dicoding Academy', date: '2025', file: certGit },
+  { id: 8, title: 'Pengenalan ke Logika Pemrograman (Programming Logic 101)', issuer: 'Dicoding Academy', date: '2025', file: certLogic },
+  { id: 9, title: 'Memulai Dasar Pemrograman untuk Menjadi Pengembang Software', issuer: 'Dicoding Academy', date: '2025', file: certSoftSkills },
+  { id: 10, title: 'Introduction to Financial Literacy', issuer: 'Dicoding Academy', date: '2025', file: certFinancial },
+  { id: 11, title: 'English Achievement Certificate', issuer: 'The British Institute (TBI)', date: '2025', file: certEnglish },
+  { id: 12, title: 'Indonesia Game Developer Exchange (IGDX) Career', issuer: 'Kominfo & IGDX', date: '2024', file: certIGDX },
+  { id: 13, title: 'E-Learning Keselamatan dan Kesehatan Kerja (K3)', issuer: 'ILO & Kemnaker', date: '2024', file: certK3 }
 ];
 
 export const experiencesData: ExperienceItem[] = [
