@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Lenis from 'lenis';
@@ -14,13 +14,15 @@ import About from './components/About';
 import Experience from './components/Experience';
 import TechStack from './components/TechStack';
 import Projects from './components/Projects';
-import Certificates from './components/Certificates';
-import Reviews from './components/Reviews';
-import Contact from './components/Contact';
 import Footer from './components/Footer';
-import ChatAssistant from './components/ChatAssistant';
-import Maintenance from './components/Maintenance';
 import { siteConfig } from './config/siteConfig';
+
+// Code-split heavy below-the-fold components to keep initial bundle ultra lightweight
+const Certificates = lazy(() => import('./components/Certificates'));
+const Reviews = lazy(() => import('./components/Reviews'));
+const Contact = lazy(() => import('./components/Contact'));
+const ChatAssistant = lazy(() => import('./components/ChatAssistant'));
+const Maintenance = lazy(() => import('./components/Maintenance'));
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme) || 'light');
@@ -105,16 +107,28 @@ export default function App() {
           <div className="px-6 md:px-12 lg:px-24">
             <TechStack lang={lang} />
             <Projects lang={lang} />
-            <Certificates lang={lang} />
-            {siteConfig.features.reviews && <Reviews lang={lang} />}
+            <Suspense fallback={<div className="py-20 text-center opacity-40 text-xs font-mono">Loading certificates...</div>}>
+              <Certificates lang={lang} />
+            </Suspense>
+            {siteConfig.features.reviews && (
+              <Suspense fallback={null}>
+                <Reviews lang={lang} />
+              </Suspense>
+            )}
           </div>
 
-          <Contact lang={lang} />
+          <Suspense fallback={null}>
+            <Contact lang={lang} />
+          </Suspense>
         </main>
 
         <Footer lang={lang} />
         
-        {siteConfig.features.chatAssistant && <ChatAssistant lang={lang} />}
+        {siteConfig.features.chatAssistant && (
+          <Suspense fallback={null}>
+            <ChatAssistant lang={lang} />
+          </Suspense>
+        )}
 
         {siteConfig.features.floatingDock && <Dock lang={lang} />}
 
