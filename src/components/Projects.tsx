@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SpotlightCard from './ui/SpotlightCard';
+import MagneticButton from './ui/MagneticButton';
 import AOS from 'aos';
 import type { Language, Project } from '../types';
 
@@ -124,48 +125,65 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap justify-center gap-2">
+            {/* Category Filter Pills with Smooth Sliding Motion */}
+            <div className="flex flex-wrap justify-center gap-2 relative">
               {(['all', 'web', 'mobile', 'desktop'] as const).map(cat => (
                 <button 
                   key={cat}
                   onClick={() => handleFilterChange(cat)}
-                  className={`px-5 md:px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all ${
+                  className={`relative px-5 md:px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${
                     filter === cat 
-                      ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--text)] shadow-lg scale-105' 
-                      : 'border-[var(--border)] hover:border-[var(--text)] text-[var(--text-muted)] hover:text-[var(--text)] opacity-80 hover:opacity-100'
+                      ? 'text-[var(--bg)] font-black' 
+                      : 'border border-[var(--border)] hover:border-[var(--text)] text-[var(--text-muted)] hover:text-[var(--text)] opacity-80 hover:opacity-100'
                   }`}
                 >
-                  {filterMap[cat]}
+                  {filter === cat && (
+                    <motion.span 
+                      layoutId="activeCategoryPill"
+                      transition={{ type: 'spring', damping: 20, stiffness: 220 }}
+                      className="absolute inset-0 bg-[var(--text)] rounded-full -z-10 shadow-lg"
+                    />
+                  )}
+                  <span className="relative z-10">{filterMap[cat]}</span>
                 </button>
               ))}
             </div>
 
-            {/* View Mode Toggle: Grid vs Typography List (Pacôme Pertant style) */}
-            <div className="flex items-center p-1 rounded-full bg-[var(--icon-bg)] border border-[var(--border)] shadow-xs">
+            {/* View Mode Toggle with Smooth Sliding Motion */}
+            <div className="flex items-center p-1 rounded-full bg-[var(--icon-bg)] border border-[var(--border)] shadow-xs relative">
               <button
                 type="button"
                 onClick={() => setViewMode('grid')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${
-                  viewMode === 'grid'
-                    ? 'bg-[var(--text)] text-[var(--bg)] shadow-md'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                className={`relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                  viewMode === 'grid' ? 'text-[var(--bg)]' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
                 title="Grid Cards View"
               >
-                <LayoutGrid size={12} /> Grid
+                {viewMode === 'grid' && (
+                  <motion.span
+                    layoutId="activeViewModePill"
+                    transition={{ type: 'spring', damping: 22, stiffness: 240 }}
+                    className="absolute inset-0 bg-[var(--text)] rounded-full -z-10 shadow-sm"
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-1.5"><LayoutGrid size={12} /> Grid</span>
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode('list')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${
-                  viewMode === 'list'
-                    ? 'bg-[var(--text)] text-[var(--bg)] shadow-md'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                className={`relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                  viewMode === 'list' ? 'text-[var(--bg)]' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
                 title="Typography List View"
               >
-                <List size={12} /> List
+                {viewMode === 'list' && (
+                  <motion.span
+                    layoutId="activeViewModePill"
+                    transition={{ type: 'spring', damping: 22, stiffness: 240 }}
+                    className="absolute inset-0 bg-[var(--text)] rounded-full -z-10 shadow-sm"
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-1.5"><List size={12} /> List</span>
               </button>
             </div>
           </div>
@@ -447,15 +465,15 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
         <div 
           onClick={() => setSelectedProject(null)}
           data-lenis-prevent
-          className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-5 md:p-8 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-300 overflow-y-auto no-scrollbar"
+          className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-5 md:p-8 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-300 overflow-y-auto lg:overflow-hidden no-scrollbar"
         >
           <div 
             onClick={e => e.stopPropagation()}
             data-lenis-prevent
-            className="relative w-full max-w-5xl max-h-[92vh] flex flex-col rounded-[2rem] md:rounded-[2.5rem] bg-[var(--card)] text-[var(--text)] border border-[var(--border)] shadow-[0_25px_70px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-200"
+            className="relative w-full max-w-5xl max-h-[94vh] lg:h-[88vh] flex flex-col rounded-[2rem] md:rounded-[2.5rem] bg-[var(--card)] text-[var(--text)] border border-[var(--border)] shadow-[0_25px_70px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-200"
           >
-            {/* Modal Top Bar: Generous badge padding */}
-            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-b border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-md z-30">
+            {/* Modal Top Bar: Fixed at top */}
+            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-b border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-md z-30 flex-shrink-0">
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-mono font-bold tracking-widest text-[var(--text-muted)] uppercase">
                   {currentProjectIndex + 1 < 10 ? `0${currentProjectIndex + 1}` : currentProjectIndex + 1} / {filteredProjects.length < 10 ? `0${filteredProjects.length}` : filteredProjects.length}
@@ -475,12 +493,12 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
               </button>
             </div>
 
-            {/* Modal Body: Two-Column Responsive Layout */}
-            <div data-lenis-prevent className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Modal Body: Left column is FIXED/STATIC, Right column is ONLY scrollable */}
+            <div data-lenis-prevent className="flex-1 overflow-y-auto lg:overflow-hidden p-6 md:p-8 min-h-0">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start lg:h-full lg:min-h-0">
                 
-                {/* Left Column: Media Player / Video Showcase */}
-                <div className="lg:col-span-7 flex flex-col space-y-4">
+                {/* Left Column: Media Player / Video Showcase (FIXED, NON-SCROLLABLE) */}
+                <div className="lg:col-span-7 flex flex-col space-y-4 lg:sticky lg:top-0 select-none flex-shrink-0">
                   {/* Media Tab Selector: Using 'Video Demo' and 'Foto/Images' */}
                   {selectedProject.video && selectedProject.gallery && selectedProject.gallery.length > 0 && (
                     <div className="inline-flex p-1 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] backdrop-blur-md w-fit">
@@ -620,8 +638,8 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                   )}
                 </div>
 
-                {/* Right Column: Project Metadata, Highlights & CTAs */}
-                <div className="lg:col-span-5 flex flex-col space-y-6">
+                {/* Right Column: Project Metadata, Highlights & CTAs (INDEPENDENTLY SCROLLABLE ONLY) */}
+                <div data-lenis-prevent className="lg:col-span-5 flex flex-col space-y-6 lg:overflow-y-auto lg:h-full lg:max-h-[calc(88vh-140px)] pr-1 sm:pr-2 no-scrollbar">
                   <div>
                     <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-3 text-[var(--text)]">
                       {selectedProject.title}
@@ -665,38 +683,44 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                     </div>
                   </div>
 
-                  {/* Action Link Buttons */}
+                  {/* Action Link Buttons with Magnetic Motion */}
                   <div className="pt-2 flex flex-wrap gap-2.5">
                     {selectedProject.demo && (
-                      <a
-                        href={selectedProject.demo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[var(--accent)] text-white text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg hover:opacity-90"
-                      >
-                        <ExternalLink size={14} /> {t.visitLive}
-                      </a>
+                      <MagneticButton className="flex-1 min-w-[120px]">
+                        <a
+                          href={selectedProject.demo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[var(--accent)] text-white text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg hover:opacity-90"
+                        >
+                          <ExternalLink size={14} /> {t.visitLive}
+                        </a>
+                      </MagneticButton>
                     )}
                     {selectedProject.github && (
-                      <a
-                        href={selectedProject.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[var(--icon-bg)] hover:bg-[var(--text)] hover:text-[var(--bg)] text-[var(--text)] border border-[var(--border)] text-[10px] font-bold uppercase tracking-widest transition-all"
-                      >
-                        <Globe size={14} /> {t.viewRepo}
-                      </a>
+                      <MagneticButton className="flex-1 min-w-[120px]">
+                        <a
+                          href={selectedProject.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[var(--icon-bg)] hover:bg-[var(--text)] hover:text-[var(--bg)] text-[var(--text)] border border-[var(--border)] text-[10px] font-bold uppercase tracking-widest transition-all"
+                        >
+                          <Globe size={14} /> {t.viewRepo}
+                        </a>
+                      </MagneticButton>
                     )}
                     {selectedProject.apk && (
-                      <a
-                        href={selectedProject.apk}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        download
-                        className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest transition-all shadow-md shadow-emerald-900/30"
-                      >
-                        <Download size={14} /> {t.downloadApk}
-                      </a>
+                      <MagneticButton className="flex-1 min-w-[120px]">
+                        <a
+                          href={selectedProject.apk}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest transition-all shadow-md shadow-emerald-900/30"
+                        >
+                          <Download size={14} /> {t.downloadApk}
+                        </a>
+                      </MagneticButton>
                     )}
                   </div>
                 </div>
@@ -705,7 +729,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
             </div>
 
             {/* Modal Bottom Navigation Bar (Prev / Next Project) */}
-            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-t border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-md">
+            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-t border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-md flex-shrink-0">
               <button
                 type="button"
                 onClick={handlePrevProject}
