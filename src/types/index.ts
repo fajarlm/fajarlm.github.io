@@ -15,6 +15,9 @@ export interface Project {
   github?: string;
   demo?: string;
   apk?: string;
+  video?: string;
+  poster?: string;
+  highlights?: { en: string[]; id: string[] };
 }
 
 export interface Certificate {

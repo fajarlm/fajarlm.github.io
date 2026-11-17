@@ -70,6 +70,21 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['Next.js', 'React', 'Tailwind', 'TypeScript', 'Framer Motion'],
     img: wishoraImg,
+    video: '/videos/wishora_preview.webm',
+    highlights: {
+      en: [
+        'Interactive virtual birthday candles with blow detection',
+        'Real-time storytelling animations with sound effects',
+        'Responsive mobile-first greeting card design',
+        'Background music player with dynamic track selection'
+      ],
+      id: [
+        'Fitur interaktif tiup lilin ulang tahun virtual',
+        'Animasi storytelling dinamis dengan efek suara',
+        'Desain kartu ucapan responsif mobile-first',
+        'Pemutar musik latar dengan pilihan lagu dinamis'
+      ]
+    },
     gallery: [wishoraDoc],
     github: 'https://github.com/fajarlm/wishora',
     demo: 'https://wishora.web.id'
@@ -84,6 +99,21 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['Next.js', 'TypeScript', 'Tailwind', 'Supabase', 'Gemini AI'],
     img: monetaImg,
+    video: '/videos/moneta_preview.webm',
+    highlights: {
+      en: [
+        'AI-powered automated expense classification and insights',
+        'Interactive monthly budgeting & cashflow charts',
+        'Multi-wallet management with real-time balance tracking',
+        'Secure authentication and cloud synchronization with Supabase'
+      ],
+      id: [
+        'Klasifikasi pengeluaran otomatis & insight bertenaga AI',
+        'Grafik interaktif anggaran bulanan & arus kas',
+        'Manajemen multi-dompet dengan saldo real-time',
+        'Autentikasi aman dan sinkronisasi cloud dengan Supabase'
+      ]
+    },
     gallery: [monetaDoc],
     github: 'https://github.com/fajarlm/Moneta',
     demo: 'https://finmoneta.vercel.app'
@@ -98,6 +128,21 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['Next.js', 'WASM', 'Tailwind', 'TypeScript', 'Web APIs'],
     img: docmorphImg,
+    video: '/videos/docmorph_preview.webm',
+    highlights: {
+      en: [
+        '100% Client-side document processing with WebAssembly (zero data uploads)',
+        'Instant conversion between PDF, DOCX, TXT, CSV, and JSON',
+        'Multi-theme UI: Neo-brutalism, Modern Clean, and Retro Windows 98',
+        'In-browser neural translation powered by local AI'
+      ],
+      id: [
+        'Pemrosesan dokumen 100% di browser via WebAssembly tanpa upload',
+        'Konversi instan antar format PDF, DOCX, TXT, CSV, dan JSON',
+        'Multi-tema UI: Neo-brutalism, Modern Clean, dan Retro Windows 98',
+        'Terjemahan neural instan langsung di sisi peramban pengguna'
+      ]
+    },
     gallery: [docmorphDoc2],
     github: 'https://github.com/fajarlm/convert-file',
     demo: 'https://convert-file-vert.vercel.app'
@@ -112,6 +157,20 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['React', 'Express.js', 'Vite', 'Tailwind', 'Node.js'],
     img: gotohImg,
+    highlights: {
+      en: [
+        'Local fitness community group locator and discussions',
+        'Personalized daily workout routines and calorie trackers',
+        'Direct consultation booking with verified health coaches',
+        'Community leaderboard and progress achievement sharing'
+      ],
+      id: [
+        'Pencarian komunitas olahraga lokal dan forum diskusi',
+        'Rencana latihan harian terpersonalisasi dan kalkulator kalori',
+        'Jadwal konsultasi langsung dengan praktisi kesehatan',
+        'Papan peringkat komunitas dan pencapaian target harian'
+      ]
+    },
     gallery: [gotohDoc],
     github: 'https://github.com/fajarlm/GOTOH',
     demo: 'https://gotoh.fajarlm.biz.id/'
@@ -126,6 +185,21 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['React', 'Vite', 'Canvas/SVG', 'SQL Parser', 'Tailwind'],
     img: chenErdImg,
+    video: '/videos/chen_erd_preview.webm',
+    highlights: {
+      en: [
+        'Authentic 1976 Peter Chen Entity-Relationship Diagram modeling',
+        'Live SQL DDL parser & automatic diagram generator',
+        'Interactive SVG canvas with smooth panning and zooming',
+        'High-resolution PNG, SVG vector, and SQL schema export'
+      ],
+      id: [
+        'Pemodelan autentik notasi ERD Peter Chen tahun 1976',
+        'Parser SQL DDL real-time yang langsung menghasilkan diagram',
+        'Kanvas SVG interaktif dengan dukungan drag, pan, dan zoom',
+        'Ekspor resolusi tinggi ke format gambar PNG, vektor SVG, dan SQL'
+      ]
+    },
     gallery: [chenErdDoc2],
     github: 'https://github.com/fajarlm/chen-erd',
     demo: 'https://chen-erd.vercel.app'
@@ -140,6 +214,21 @@ export const projectsData: Project[] = [
     type: 'web', 
     tech: ['React','Flowbite','Tailwind'], 
     img: quranic, 
+    video: '/videos/quranic_preview.webm',
+    highlights: {
+      en: [
+        'Complete 114 Surahs with authentic typography and tajweed guidance',
+        'Official Indonesian Ministry of Religious Affairs (Kemenag) translation',
+        'Audio recitations streaming from renowned Qaris',
+        'Fast fuzzy search across Surah names, numbers, and meanings'
+      ],
+      id: [
+        'Lengkap 114 Surah dengan tipografi Arab autentik dan panduan tajwid',
+        'Terjemahan resmi Kementerian Agama Republik Indonesia',
+        'Streaming murottal audio jernih dari qari terkemuka',
+        'Pencarian cerdas berdasarkan nama surah, nomor, maupun arti'
+      ]
+    },
     gallery: [quranicWebDoc1, quranicWebDoc2],
     github: 'https://github.com/fajarlm/quranic', 
     demo: 'https://quani.vercel.app/' 
@@ -268,7 +357,24 @@ export const translations = {
     hero: { role: 'Fullstack Developer', tagline: 'Hi, I\'m Fajar — I build web apps from front to back. Currently a vocational student at SMK Wikrama focused on real-world projects. Let\'s connect!' },
     about: { title: 'A bit about me.', desc: 'I\'m a Software Engineering student at SMK Wikrama Bogor. I enjoy turning ideas into working products — mostly with Laravel, React, and Next.js. Outside of class, I take on freelance projects and constantly learn new tools.' },
     tech: { title: 'Tech &', subtitle: 'Tools.' },
-    projects: { title: 'My', subtitle: 'Projects.', filterAll: 'All' },
+    projects: {
+      title: 'My',
+      subtitle: 'Projects.',
+      filterAll: 'All',
+      viewDetails: 'Details & Video',
+      videoShowcase: 'Video Showcase',
+      videoBadge: 'Video Demo',
+      screenshots: 'Screenshots',
+      keyHighlights: 'Key Capabilities & Highlights',
+      prevProject: 'Previous Project',
+      nextProject: 'Next Project',
+      visitLive: 'Live Demo',
+      viewRepo: 'Repository',
+      downloadApk: 'Download APK',
+      closeModal: 'Close',
+      soundOn: 'Unmute',
+      soundOff: 'Mute'
+    },
     certificates: { title: 'My', subtitle: 'Certificates.' },
     reviews: {
       badge: 'Social Proof & Feedback',
@@ -323,7 +429,24 @@ export const translations = {
     hero: { role: 'Fullstack Developer', tagline: 'Halo, saya Fajar — saya membangun aplikasi web dari depan sampai belakang. Saat ini siswa SMK Wikrama yang fokus pada proyek nyata. Yuk terhubung!' },
     about: { title: 'Sedikit tentang saya.', desc: 'Saya siswa Rekayasa Perangkat Lunak di SMK Wikrama Bogor. Saya suka mengubah ide menjadi produk nyata — terutama dengan Laravel, React, dan Next.js. Di luar jam sekolah, saya mengerjakan proyek freelance dan terus belajar hal baru.' },
     tech: { title: 'Teknologi &', subtitle: 'Alat.' },
-    projects: { title: 'Proyek', subtitle: 'Saya.', filterAll: 'Semua' },
+    projects: {
+      title: 'Proyek',
+      subtitle: 'Saya.',
+      filterAll: 'Semua',
+      viewDetails: 'Detail & Video',
+      videoShowcase: 'Dokumentasi Video',
+      videoBadge: 'Video Demo',
+      screenshots: 'Galeri Foto',
+      keyHighlights: 'Fitur Utama & Keunggulan',
+      prevProject: 'Proyek Sebelumnya',
+      nextProject: 'Proyek Berikutnya',
+      visitLive: 'Kunjungi Website',
+      viewRepo: 'Lihat Kode',
+      downloadApk: 'Unduh APK',
+      closeModal: 'Tutup',
+      soundOn: 'Bunyikan',
+      soundOff: 'Senyapkan'
+    },
     certificates: { title: 'Sertifikat', subtitle: 'Saya.' },
     reviews: {
       badge: 'Ulasan & Testimoni',
