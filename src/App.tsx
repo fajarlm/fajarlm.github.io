@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 import { ChevronUp } from 'lucide-react';
 import type { Theme, Language } from './types';
 
@@ -18,6 +20,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ChatAssistant from './components/ChatAssistant';
 import Maintenance from './components/Maintenance';
+import ShowreelBadge from './components/ShowreelBadge';
 import { siteConfig } from './config/siteConfig';
 
 export default function App() {
@@ -32,9 +35,28 @@ export default function App() {
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: 'ease-out-quad' });
+
+    // Initialize Lenis smooth scrolling (Pacôme Pertant agency-level inertia feel)
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    const rafId = requestAnimationFrame(raf);
+
     const handleScroll = () => setShowScrollTop(window.scrollY > 400);
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -93,6 +115,9 @@ export default function App() {
 
         <Footer lang={lang} />
         
+        {/* Floating Rotating Showreel Badge (Pacôme Pertant inspiration) */}
+        <ShowreelBadge lang={lang} />
+
         {siteConfig.features.chatAssistant && <ChatAssistant lang={lang} />}
 
         {siteConfig.features.floatingDock && <Dock lang={lang} />}
