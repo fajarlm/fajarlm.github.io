@@ -20,7 +20,6 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ChatAssistant from './components/ChatAssistant';
 import Maintenance from './components/Maintenance';
-import ShowreelBadge from './components/ShowreelBadge';
 import { siteConfig } from './config/siteConfig';
 
 export default function App() {
@@ -115,9 +114,6 @@ export default function App() {
 
         <Footer lang={lang} />
         
-        {/* Floating Rotating Showreel Badge (Pacôme Pertant inspiration) */}
-        <ShowreelBadge lang={lang} />
-
         {siteConfig.features.chatAssistant && <ChatAssistant lang={lang} />}
 
         {siteConfig.features.floatingDock && <Dock lang={lang} />}

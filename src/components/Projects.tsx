@@ -444,10 +444,12 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
       {selectedProject && (
         <div 
           onClick={() => setSelectedProject(null)}
+          data-lenis-prevent
           className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-5 md:p-8 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-300 overflow-y-auto no-scrollbar"
         >
           <div 
             onClick={e => e.stopPropagation()}
+            data-lenis-prevent
             className="relative w-full max-w-5xl max-h-[92vh] flex flex-col rounded-[2rem] md:rounded-[2.5rem] bg-[var(--card)] text-[var(--text)] border border-[var(--border)] shadow-[0_25px_70px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-200"
           >
             {/* Modal Top Bar: Generous badge padding */}
@@ -472,7 +474,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
             </div>
 
             {/* Modal Body: Two-Column Responsive Layout */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
+            <div data-lenis-prevent className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
                 {/* Left Column: Media Player / Video Showcase */}

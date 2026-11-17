@@ -46,6 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, lang }) => {
 
       {/* Sheet Drawer Panel */}
       <aside 
+        data-lenis-prevent
         className={`fixed top-0 left-0 h-full w-80 card-minimal z-[70] transition-transform duration-500 ease-out shadow-2xl flex flex-col bg-[var(--card)]/95 backdrop-blur-xl border-r border-[var(--border)] ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
