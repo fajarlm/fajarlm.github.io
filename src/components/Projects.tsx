@@ -125,28 +125,24 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {/* Category Filter Pills with Smooth Sliding Motion */}
-            <div className="flex flex-wrap justify-center gap-2 relative">
-              {(['all', 'web', 'mobile', 'desktop'] as const).map(cat => (
-                <button 
-                  key={cat}
-                  onClick={() => handleFilterChange(cat)}
-                  className={`relative px-5 md:px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${
-                    filter === cat 
-                      ? 'text-[var(--bg)] font-black' 
-                      : 'border border-[var(--border)] hover:border-[var(--text)] text-[var(--text-muted)] hover:text-[var(--text)] opacity-80 hover:opacity-100'
-                  }`}
-                >
-                  {filter === cat && (
-                    <motion.span 
-                      layoutId="activeCategoryPill"
-                      transition={{ type: 'spring', damping: 20, stiffness: 220 }}
-                      className="absolute inset-0 bg-[var(--text)] rounded-full -z-10 shadow-lg"
-                    />
-                  )}
-                  <span className="relative z-10">{filterMap[cat]}</span>
-                </button>
-              ))}
+            {/* Category Filter Pills (Always visible, distinct active color) */}
+            <div className="flex flex-wrap justify-center gap-2">
+              {(['all', 'web', 'mobile', 'desktop'] as const).map(cat => {
+                const isActive = filter === cat;
+                return (
+                  <button 
+                    key={cat}
+                    onClick={() => handleFilterChange(cat)}
+                    className={`px-5 md:px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-200 border ${
+                      isActive 
+                        ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-md shadow-[var(--accent)]/30 scale-105' 
+                        : 'bg-[var(--card)]/80 text-[var(--text)]/85 border-[var(--border)] hover:border-[var(--text)] hover:text-[var(--text)] hover:bg-[var(--card)] shadow-xs'
+                    }`}
+                  >
+                    {filterMap[cat]}
+                  </button>
+                );
+              })}
             </div>
 
             {/* View Mode Toggle with Smooth Sliding Motion */}
@@ -639,7 +635,10 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                 </div>
 
                 {/* Right Column: Project Metadata, Highlights & CTAs (INDEPENDENTLY SCROLLABLE ONLY) */}
-                <div data-lenis-prevent className="lg:col-span-5 flex flex-col space-y-6 lg:overflow-y-auto lg:h-full lg:max-h-[calc(88vh-140px)] pr-1 sm:pr-2 no-scrollbar">
+                <div 
+                  data-lenis-prevent 
+                  className="lg:col-span-5 flex flex-col space-y-6 lg:overflow-y-auto lg:h-full lg:max-h-[calc(88vh-140px)] pr-3 sm:pr-4 pb-16 [scrollbar-width:thin] [scrollbar-color:var(--accent)_rgba(128,128,128,0.2)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black/10 dark:[&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--accent)] [&::-webkit-scrollbar-thumb]:rounded-full"
+                >
                   <div>
                     <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-3 text-[var(--text)]">
                       {selectedProject.title}
@@ -684,7 +683,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                   </div>
 
                   {/* Action Link Buttons with Magnetic Motion */}
-                  <div className="pt-2 flex flex-wrap gap-2.5">
+                  <div className="pt-3 pb-6 flex flex-wrap gap-2.5">
                     {selectedProject.demo && (
                       <MagneticButton className="flex-1 min-w-[120px]">
                         <a
