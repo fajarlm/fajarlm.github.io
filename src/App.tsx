@@ -15,6 +15,7 @@ import Experience from './components/Experience';
 import TechStack from './components/TechStack';
 import Projects from './components/Projects';
 import Footer from './components/Footer';
+import ScrollProgressBar from './components/ui/ScrollProgressBar';
 import { siteConfig } from './config/siteConfig';
 
 // Code-split heavy below-the-fold components to keep initial bundle ultra lightweight
@@ -86,6 +87,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen transition-all duration-500 bg-[var(--bg)] overflow-x-hidden text-[var(--text)] selection:bg-[var(--accent)] selection:text-[var(--bg)]">
+      <ScrollProgressBar />
       <Navbar 
         theme={theme} 
         setTheme={setTheme} 
