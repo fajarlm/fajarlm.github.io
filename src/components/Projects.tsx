@@ -14,8 +14,12 @@ import {
   Film,
   Sparkles,
   Volume2,
-  VolumeX
+  VolumeX,
+  LayoutGrid,
+  List,
+  ArrowUpRight
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import SpotlightCard from './ui/SpotlightCard';
 import AOS from 'aos';
 import type { Language, Project } from '../types';
@@ -26,11 +30,18 @@ interface ProjectsProps {
 
 const Projects: React.FC<ProjectsProps> = ({ lang }) => {
   const [filter, setFilter] = useState<'all' | 'web' | 'mobile' | 'desktop'>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeMediaTab, setActiveMediaTab] = useState<'video' | 'gallery'>('video');
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  };
 
   const itemsPerPage = 6;
   const t = translations[lang].projects;
@@ -112,175 +123,319 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
             </h3>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2">
-            {(['all', 'web', 'mobile', 'desktop'] as const).map(cat => (
-              <button 
-                key={cat}
-                onClick={() => handleFilterChange(cat)}
-                className={`px-5 md:px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all ${
-                  filter === cat 
-                    ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--text)] shadow-lg scale-105' 
-                    : 'border-[var(--border)] hover:border-[var(--text)] text-[var(--text-muted)] hover:text-[var(--text)] opacity-80 hover:opacity-100'
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {/* Category Filter Pills */}
+            <div className="flex flex-wrap justify-center gap-2">
+              {(['all', 'web', 'mobile', 'desktop'] as const).map(cat => (
+                <button 
+                  key={cat}
+                  onClick={() => handleFilterChange(cat)}
+                  className={`px-5 md:px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all ${
+                    filter === cat 
+                      ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--text)] shadow-lg scale-105' 
+                      : 'border-[var(--border)] hover:border-[var(--text)] text-[var(--text-muted)] hover:text-[var(--text)] opacity-80 hover:opacity-100'
+                  }`}
+                >
+                  {filterMap[cat]}
+                </button>
+              ))}
+            </div>
+
+            {/* View Mode Toggle: Grid vs Typography List (Pacôme Pertant style) */}
+            <div className="flex items-center p-1 rounded-full bg-[var(--icon-bg)] border border-[var(--border)] shadow-xs">
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${
+                  viewMode === 'grid'
+                    ? 'bg-[var(--text)] text-[var(--bg)] shadow-md'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
+                title="Grid Cards View"
               >
-                {filterMap[cat]}
+                <LayoutGrid size={12} /> Grid
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${
+                  viewMode === 'list'
+                    ? 'bg-[var(--text)] text-[var(--bg)] shadow-md'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                }`}
+                title="Typography List View"
+              >
+                <List size={12} /> List
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
-          {currentItems.map((p) => {
-            const hasVideo = Boolean(p.video);
+        {viewMode === 'grid' ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
+              {currentItems.map((p) => {
+                const hasVideo = Boolean(p.video);
 
-            return (
-              <SpotlightCard 
-                key={p.id} 
-                className="group card-minimal rounded-[2.5rem] p-5 shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col border border-[var(--border)] bg-[var(--card)] text-[var(--text)]" 
-                spotlightColor="rgba(120, 120, 120, 0.12)"
-              >
-                {/* Media Container: Photo image only (crisp, fast, with comfortable badge spacing) */}
-                <div 
-                  className="relative overflow-hidden rounded-2xl aspect-video mb-6 cursor-pointer group/media z-10 bg-[var(--icon-bg)] border border-[var(--border)]"
-                  onClick={() => setSelectedProject(p)}
+                return (
+                  <SpotlightCard 
+                    key={p.id} 
+                    className="group card-minimal rounded-[2.5rem] p-5 shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col border border-[var(--border)] bg-[var(--card)] text-[var(--text)]" 
+                    spotlightColor="rgba(120, 120, 120, 0.12)"
+                  >
+                    {/* Media Container: Photo image only (crisp, fast, with comfortable badge spacing) */}
+                    <div 
+                      className="relative overflow-hidden rounded-2xl aspect-video mb-6 cursor-pointer group/media z-10 bg-[var(--icon-bg)] border border-[var(--border)]"
+                      onClick={() => setSelectedProject(p)}
+                    >
+                      <img 
+                        src={p.img} 
+                        alt={p.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-700" 
+                      />
+
+                      {/* Hover Overlay with View Details prompt */}
+                      <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/media:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="px-5 py-2.5 rounded-full bg-[var(--card)]/95 text-[var(--text)] text-[10px] font-bold uppercase tracking-widest shadow-2xl flex items-center gap-2 transform translate-y-2 group-hover/media:translate-y-0 transition-all border border-[var(--border)]">
+                          <Maximize2 size={13} className="text-[var(--accent)]" /> {t.viewDetails}
+                        </div>
+                      </div>
+
+                      {/* Top-Right Type Badge: Generous padding, not cramped */}
+                      <div className="absolute top-4 right-4 bg-[var(--card)]/95 backdrop-blur-md text-[var(--text)] px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[var(--border)] shadow-md pointer-events-none z-20">
+                        {p.type}
+                      </div>
+
+                      {/* Top-Left Video / Photo Count Badges: Generous padding */}
+                      <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none z-20">
+                        {hasVideo && (
+                          <span className="bg-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wide flex items-center gap-1.5 border border-purple-400/40 shadow-md">
+                            <Play size={10} className="fill-white" /> {t.videoBadge}
+                          </span>
+                        )}
+                        {p.gallery && p.gallery.length > 0 && (
+                          <span className="bg-black/85 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wide flex items-center gap-1.5 border border-white/20 shadow-md">
+                            <ImageIcon size={11} /> {p.gallery.length + 1} {t.screenshots}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Card Content: High contrast text matching theme */}
+                    <div className="px-1 flex flex-col flex-grow z-10">
+                      <div className="flex items-start justify-between gap-2 mb-2.5">
+                        <h4 
+                          onClick={() => setSelectedProject(p)}
+                          className="text-xl md:text-2xl font-black tracking-tight leading-snug cursor-pointer text-[var(--text)] group-hover:text-[var(--accent)] transition-colors"
+                        >
+                          {p.title}
+                        </h4>
+                      </div>
+                      
+                      {/* High Contrast Description */}
+                      <p className="text-xs md:text-[13px] text-[var(--text)]/80 dark:text-zinc-300 mb-5 line-clamp-2 leading-relaxed font-normal">
+                        {p.description[lang]}
+                      </p>
+                      
+                      {/* Tech Stack Badges: Generous breathing room, rounded-xl, no cramped text */}
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {p.tech.map((techName, idx) => (
+                          <span 
+                            key={idx} 
+                            className="px-3.5 py-1.5 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)] text-[10px] font-semibold tracking-wide shadow-xs transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                          >
+                            {techName}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      {/* Action Buttons */}
+                      <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-[var(--border)]">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedProject(p)}
+                          className="flex-1 min-w-[85px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[var(--accent)]/15 hover:bg-[var(--accent)] text-[var(--accent)] hover:text-white border border-[var(--accent)]/30 text-[10px] font-bold uppercase tracking-wider transition-all shadow-xs"
+                        >
+                          <Film size={13} /> {t.viewDetails}
+                        </button>
+                        {p.github && (
+                          <a 
+                            href={p.github} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="flex-1 min-w-[70px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--text)] hover:text-[var(--bg)] text-[10px] font-bold uppercase tracking-wider transition-all shadow-xs"
+                          >
+                            <Globe size={13} /> Repo
+                          </a>
+                        )}
+                        {p.demo && (
+                          <a 
+                            href={p.demo} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="flex-1 min-w-[70px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[var(--accent)] text-white hover:opacity-90 text-[10px] font-bold uppercase tracking-wider transition-all shadow-md"
+                          >
+                            <ExternalLink size={13} /> Demo
+                          </a>
+                        )}
+                        {p.apk && (
+                          <a 
+                            href={p.apk} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            download 
+                            className="flex-1 min-w-[85px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-wider transition-all shadow-md shadow-emerald-900/20"
+                          >
+                            <Download size={13} /> APK
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </SpotlightCard>
+                );
+              })}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="mt-20 flex justify-center items-center gap-8">
+                <button 
+                  disabled={currentPage === 1} 
+                  onClick={() => setCurrentPage(p => p - 1)} 
+                  className="p-4 rounded-full border border-[var(--border)] hover:border-[var(--text)] disabled:opacity-20 transition-all shadow-sm"
                 >
-                  <img 
-                    src={p.img} 
-                    alt={p.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-700" 
-                  />
+                  <ChevronLeft size={20} />
+                </button>
+                <div className="flex gap-4">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button 
+                      key={i} 
+                      onClick={() => setCurrentPage(i + 1)} 
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        currentPage === i + 1 
+                          ? 'bg-[var(--text)] scale-150 shadow-md' 
+                          : 'bg-[var(--border)] hover:bg-[var(--text-muted)]'
+                      }`} 
+                    />
+                  ))}
+                </div>
+                <button 
+                  disabled={currentPage === totalPages} 
+                  onClick={() => setCurrentPage(p => p + 1)} 
+                  className="p-4 rounded-full border border-[var(--border)] hover:border-[var(--text)] disabled:opacity-20 transition-all shadow-sm"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          /* LIST VIEW (Pacôme Pertant Editorial Typography Showcase) */
+          <div 
+            onMouseMove={handleMouseMove}
+            className="relative flex flex-col divide-y divide-[var(--border)] border-y border-[var(--border)] my-6"
+          >
+            {filteredProjects.map((p, idx) => {
+              const isHovered = hoveredProject?.id === p.id;
+              const isOtherHovered = hoveredProject !== null && !isHovered;
 
-                  {/* Hover Overlay with View Details prompt */}
-                  <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/media:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="px-5 py-2.5 rounded-full bg-[var(--card)]/95 text-[var(--text)] text-[10px] font-bold uppercase tracking-widest shadow-2xl flex items-center gap-2 transform translate-y-2 group-hover/media:translate-y-0 transition-all border border-[var(--border)]">
-                      <Maximize2 size={13} className="text-[var(--accent)]" /> {t.viewDetails}
+              return (
+                <div
+                  key={p.id}
+                  onMouseEnter={() => setHoveredProject(p)}
+                  onMouseLeave={() => setHoveredProject(null)}
+                  onClick={() => setSelectedProject(p)}
+                  className={`py-7 md:py-9 px-4 md:px-8 transition-all duration-300 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-5 group rounded-2xl ${
+                    isOtherHovered 
+                      ? 'opacity-25 blur-[0.3px]' 
+                      : 'opacity-100 hover:bg-[var(--icon-bg)]/40'
+                  }`}
+                >
+                  {/* Left: Index & Giant Title */}
+                  <div className="flex items-start md:items-center gap-5 md:gap-8 flex-1">
+                    <span className="font-mono text-xs md:text-sm text-[var(--accent)] font-bold tracking-widest opacity-80 pt-1 md:pt-0">
+                      {idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
+                    </span>
+                    <div className="flex-1">
+                      <h4 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[var(--text)] group-hover:text-[var(--accent)] transition-colors flex items-center gap-3">
+                        {p.title}
+                        <ArrowUpRight 
+                          size={24} 
+                          className="opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all text-[var(--accent)] flex-shrink-0" 
+                        />
+                      </h4>
+                      <p className="text-xs md:text-sm text-[var(--text)]/75 dark:text-zinc-300 line-clamp-1 mt-1 max-w-2xl font-normal">
+                        {p.description[lang]}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Top-Right Type Badge: Generous padding, not cramped */}
-                  <div className="absolute top-4 right-4 bg-[var(--card)]/95 backdrop-blur-md text-[var(--text)] px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[var(--border)] shadow-md pointer-events-none z-20">
-                    {p.type}
-                  </div>
-
-                  {/* Top-Left Video / Photo Count Badges: Generous padding */}
-                  <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none z-20">
-                    {hasVideo && (
-                      <span className="bg-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wide flex items-center gap-1.5 border border-purple-400/40 shadow-md">
-                        <Play size={10} className="fill-white" /> {t.videoBadge}
+                  {/* Right: Badges & Tech Stack */}
+                  <div className="flex items-center gap-2.5 flex-wrap md:flex-nowrap justify-start md:justify-end">
+                    {p.video && (
+                      <span className="bg-purple-600/15 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider flex items-center gap-1.5 shadow-xs">
+                        <Play size={10} className="fill-current" /> Video
                       </span>
                     )}
-                    {p.gallery && p.gallery.length > 0 && (
-                      <span className="bg-black/85 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wide flex items-center gap-1.5 border border-white/20 shadow-md">
-                        <ImageIcon size={11} /> {p.gallery.length + 1} {t.screenshots}
-                      </span>
-                    )}
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)]">
+                      {p.type}
+                    </span>
+                    <div className="hidden lg:flex items-center gap-1.5 ml-2">
+                      {p.tech.slice(0, 3).map((tName, i) => (
+                        <span 
+                          key={i} 
+                          className="px-2.5 py-1 rounded-lg bg-[var(--icon-bg)] text-[var(--text-muted)] text-[10px] font-medium border border-[var(--border)]"
+                        >
+                          {tName}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              );
+            })}
 
-                {/* Card Content: High contrast text matching theme */}
-                <div className="px-1 flex flex-col flex-grow z-10">
-                  <div className="flex items-start justify-between gap-2 mb-2.5">
-                    <h4 
-                      onClick={() => setSelectedProject(p)}
-                      className="text-xl md:text-2xl font-black tracking-tight leading-snug cursor-pointer text-[var(--text)] group-hover:text-[var(--accent)] transition-colors"
-                    >
-                      {p.title}
-                    </h4>
-                  </div>
-                  
-                  {/* High Contrast Description */}
-                  <p className="text-xs md:text-[13px] text-[var(--text)]/80 dark:text-zinc-300 mb-5 line-clamp-2 leading-relaxed font-normal">
-                    {p.description[lang]}
-                  </p>
-                  
-                  {/* Tech Stack Badges: Generous breathing room, rounded-xl, no cramped text */}
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {p.tech.map((techName, idx) => (
-                      <span 
-                        key={idx} 
-                        className="px-3.5 py-1.5 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)] text-[10px] font-semibold tracking-wide shadow-xs transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
-                      >
-                        {techName}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-[var(--border)]">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedProject(p)}
-                      className="flex-1 min-w-[85px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[var(--accent)]/15 hover:bg-[var(--accent)] text-[var(--accent)] hover:text-white border border-[var(--accent)]/30 text-[10px] font-bold uppercase tracking-wider transition-all shadow-xs"
-                    >
-                      <Film size={13} /> {t.viewDetails}
-                    </button>
-                    {p.github && (
-                      <a 
-                        href={p.github} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="flex-1 min-w-[70px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--text)] hover:text-[var(--bg)] text-[10px] font-bold uppercase tracking-wider transition-all shadow-xs"
-                      >
-                        <Globe size={13} /> Repo
-                      </a>
+            {/* FLOATING PROJECT PREVIEW CARD (Cursor follower with spring physics) */}
+            <AnimatePresence>
+              {hoveredProject && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.85, rotate: -4 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    rotate: 1.5,
+                    x: mousePos.x + 24,
+                    y: mousePos.y - 120,
+                  }}
+                  exit={{ opacity: 0, scale: 0.8, rotate: -4 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 220, mass: 0.4 }}
+                  style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 120 }}
+                  className="hidden md:block w-80 rounded-2xl overflow-hidden bg-black/90 border border-[var(--border)] shadow-[0_25px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl"
+                >
+                  <div className="relative aspect-video overflow-hidden">
+                    <img 
+                      src={hoveredProject.img} 
+                      alt={hoveredProject.title} 
+                      className="w-full h-full object-cover scale-105" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                    
+                    {hoveredProject.video && (
+                      <div className="absolute top-2.5 left-2.5 bg-purple-600 text-white px-2.5 py-1 rounded-full text-[9px] font-bold flex items-center gap-1 shadow-md">
+                        <Play size={9} className="fill-white" /> 🎬 Video Demo
+                      </div>
                     )}
-                    {p.demo && (
-                      <a 
-                        href={p.demo} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="flex-1 min-w-[70px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[var(--accent)] text-white hover:opacity-90 text-[10px] font-bold uppercase tracking-wider transition-all shadow-md"
-                      >
-                        <ExternalLink size={13} /> Demo
-                      </a>
-                    )}
-                    {p.apk && (
-                      <a 
-                        href={p.apk} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        download 
-                        className="flex-1 min-w-[85px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-wider transition-all shadow-md shadow-emerald-900/20"
-                      >
-                        <Download size={13} /> APK
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </SpotlightCard>
-            );
-          })}
-        </div>
+                    <div className="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border border-white/10">
+                      {hoveredProject.type}
+                    </div>
 
-        {totalPages > 1 && (
-          <div className="mt-20 flex justify-center items-center gap-8">
-            <button 
-              disabled={currentPage === 1} 
-              onClick={() => setCurrentPage(p => p - 1)} 
-              className="p-4 rounded-full border border-[var(--border)] hover:border-[var(--text)] disabled:opacity-20 transition-all shadow-sm"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <div className="flex gap-4">
-              {[...Array(totalPages)].map((_, i) => (
-                <button 
-                  key={i} 
-                  onClick={() => setCurrentPage(i + 1)} 
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    currentPage === i + 1 
-                      ? 'bg-[var(--text)] scale-150 shadow-md' 
-                      : 'bg-[var(--border)] hover:bg-[var(--text-muted)]'
-                  }`} 
-                />
-              ))}
-            </div>
-            <button 
-              disabled={currentPage === totalPages} 
-              onClick={() => setCurrentPage(p => p + 1)} 
-              className="p-4 rounded-full border border-[var(--border)] hover:border-[var(--text)] disabled:opacity-20 transition-all shadow-sm"
-            >
-              <ChevronRight size={20} />
-            </button>
+                    <div className="absolute bottom-2.5 left-3 right-3 text-white">
+                      <p className="text-xs font-bold truncate drop-shadow-sm">{hoveredProject.title}</p>
+                      <p className="text-[10px] text-white/80 truncate drop-shadow-sm">{hoveredProject.tech.slice(0, 3).join(' • ')}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </div>
