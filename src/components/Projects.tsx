@@ -9,11 +9,10 @@ import {
   Image as ImageIcon, 
   Download,
   Play,
-  Volume2,
-  VolumeX,
   Maximize2,
   CheckCircle2,
-  Film
+  Film,
+  Sparkles
 } from 'lucide-react';
 import SpotlightCard from './ui/SpotlightCard';
 import AOS from 'aos';
@@ -29,7 +28,6 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeMediaTab, setActiveMediaTab] = useState<'video' | 'gallery'>('video');
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
-  const [isCardAudioMuted, setIsCardAudioMuted] = useState(true);
 
   const itemsPerPage = 6;
   const t = translations[lang].projects;
@@ -138,33 +136,20 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                 className="group card-minimal rounded-[2.5rem] p-4 shadow-sm hover:shadow-xl transition-all duration-500 h-full flex flex-col" 
                 spotlightColor="rgba(120, 120, 120, 0.1)"
               >
-                {/* Media Container: Supports Autoplay Looping Video or Image */}
+                {/* Media Container: Photo image only (clean & fast on cards) */}
                 <div 
                   className="relative overflow-hidden rounded-2xl aspect-video mb-6 cursor-pointer group/media z-10 bg-black/5 dark:bg-black/30 border border-white/5"
                   onClick={() => setSelectedProject(p)}
                 >
-                  {hasVideo ? (
-                    <video
-                      src={p.video}
-                      poster={p.poster || p.img}
-                      autoPlay
-                      loop
-                      muted={isCardAudioMuted}
-                      playsInline
-                      preload="metadata"
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
-                    />
-                  ) : (
-                    <img 
-                      src={p.img} 
-                      alt={p.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-700" 
-                    />
-                  )}
+                  <img 
+                    src={p.img} 
+                    alt={p.title} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition duration-700" 
+                  />
 
                   {/* Hover Overlay with View Details prompt */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/media:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="px-4 py-2 rounded-full bg-white/90 dark:bg-black/80 backdrop-blur-md text-[var(--text)] text-[10px] font-bold uppercase tracking-widest shadow-2xl flex items-center gap-2 transform translate-y-2 group-hover/media:translate-y-0 transition-all border border-white/20">
+                  <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/media:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="px-4 py-2 rounded-full bg-white/95 dark:bg-black/85 backdrop-blur-md text-[var(--text)] text-[10px] font-bold uppercase tracking-widest shadow-2xl flex items-center gap-2 transform translate-y-2 group-hover/media:translate-y-0 transition-all border border-white/20">
                       <Maximize2 size={13} /> {t.viewDetails}
                     </div>
                   </div>
@@ -176,31 +161,16 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
 
                   <div className="absolute top-3 left-3 flex items-center gap-1.5 pointer-events-none">
                     {hasVideo && (
-                      <span className="bg-red-600/90 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider flex items-center gap-1 border border-red-400/30 shadow-sm animate-pulse">
+                      <span className="bg-purple-600/90 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider flex items-center gap-1 border border-purple-400/30 shadow-sm">
                         <Play size={9} className="fill-white" /> {t.videoBadge}
                       </span>
                     )}
                     {p.gallery && p.gallery.length > 0 && (
                       <span className="bg-black/75 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider flex items-center gap-1 border border-white/20 shadow-sm">
-                        <ImageIcon size={10} /> {p.gallery.length + 1}
+                        <ImageIcon size={10} /> {p.gallery.length + 1} {t.screenshots}
                       </span>
                     )}
                   </div>
-
-                  {/* Video Mute Quick Toggle (only if project has video) */}
-                  {hasVideo && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsCardAudioMuted(!isCardAudioMuted);
-                      }}
-                      className="absolute bottom-3 right-3 z-20 p-2 rounded-full bg-black/70 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 shadow-lg transition-transform hover:scale-110"
-                      title={isCardAudioMuted ? t.soundOn : t.soundOff}
-                    >
-                      {isCardAudioMuted ? <VolumeX size={13} /> : <Volume2 size={13} />}
-                    </button>
-                  )}
                 </div>
 
                 {/* Card Content */}
@@ -309,31 +279,31 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
         )}
       </div>
 
-      {/* PROJECT DETAIL MODAL (Deep Dive Showcase like ahtar.oceanspace.co.id) */}
+      {/* PROJECT DETAIL MODAL (Deep Dive Showcase) */}
       {selectedProject && (
         <div 
           onClick={() => setSelectedProject(null)}
-          className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-5 md:p-8 bg-black/75 backdrop-blur-xl animate-in fade-in duration-300 overflow-y-auto no-scrollbar"
+          className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-5 md:p-8 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-300 overflow-y-auto no-scrollbar"
         >
           <div 
             onClick={e => e.stopPropagation()}
-            className="relative w-full max-w-5xl max-h-[92vh] flex flex-col rounded-[2.5rem] bg-[var(--card-bg)] text-[var(--text)] border border-[var(--border)] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+            className="relative w-full max-w-5xl max-h-[92vh] flex flex-col rounded-[2rem] md:rounded-[2.5rem] bg-[#0c1017] text-[#e6edf3] border border-white/10 shadow-[0_25px_70px_rgba(0,0,0,0.7)] overflow-hidden animate-in zoom-in-95 duration-200"
           >
             {/* Modal Top Bar */}
-            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-b border-[var(--border)] bg-[var(--card-bg)]/80 backdrop-blur-md z-30">
+            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-b border-white/10 bg-[#0c1017]/90 backdrop-blur-md z-30">
               <div className="flex items-center gap-3">
-                <span className="text-[10px] font-mono font-bold tracking-widest text-[var(--text-muted)] uppercase">
+                <span className="text-[11px] font-mono font-bold tracking-widest text-zinc-400 uppercase">
                   {currentProjectIndex + 1 < 10 ? `0${currentProjectIndex + 1}` : currentProjectIndex + 1} / {filteredProjects.length < 10 ? `0${filteredProjects.length}` : filteredProjects.length}
                 </span>
-                <span className="w-1 h-1 rounded-full bg-[var(--border)]" />
-                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest bg-[var(--icon-bg)] text-[var(--text)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                <span className="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest bg-white/[0.08] text-white border border-white/10">
                   {selectedProject.type}
                 </span>
               </div>
 
               <button 
                 onClick={() => setSelectedProject(null)}
-                className="p-2.5 rounded-full bg-[var(--icon-bg)] hover:bg-[var(--text)] hover:text-[var(--bg)] text-[var(--text)] transition-all hover:rotate-90"
+                className="p-2.5 rounded-full bg-white/[0.08] hover:bg-white/20 text-white transition-all hover:rotate-90"
                 title={t.closeModal || 'Tutup'}
               >
                 <X size={18} />
@@ -346,25 +316,25 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                 
                 {/* Left Column: Media Player / Video Showcase */}
                 <div className="lg:col-span-7 flex flex-col space-y-4">
-                  {/* Media Tab Selector (if project has both video and screenshots) */}
+                  {/* Media Tab Selector: Using 'Video Demo' and 'Image/Foto' */}
                   {selectedProject.video && selectedProject.gallery && selectedProject.gallery.length > 0 && (
-                    <div className="flex items-center gap-2 p-1 rounded-xl bg-[var(--icon-bg)] w-fit border border-[var(--border)]">
+                    <div className="inline-flex p-1 rounded-2xl bg-black/50 border border-white/10 backdrop-blur-md w-fit">
                       <button
                         onClick={() => setActiveMediaTab('video')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
+                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${
                           activeMediaTab === 'video'
-                            ? 'bg-[var(--text)] text-[var(--bg)] shadow-md'
-                            : 'opacity-60 hover:opacity-100'
+                            ? 'bg-white text-black shadow-lg'
+                            : 'text-zinc-400 hover:text-white hover:bg-white/5'
                         }`}
                       >
-                        <Film size={12} /> {t.videoShowcase}
+                        <Play size={11} className="fill-current" /> {t.videoShowcase}
                       </button>
                       <button
                         onClick={() => setActiveMediaTab('gallery')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
+                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${
                           activeMediaTab === 'gallery'
-                            ? 'bg-[var(--text)] text-[var(--bg)] shadow-md'
-                            : 'opacity-60 hover:opacity-100'
+                            ? 'bg-white text-black shadow-lg'
+                            : 'text-zinc-400 hover:text-white hover:bg-white/5'
                         }`}
                       >
                         <ImageIcon size={12} /> {t.screenshots} ({selectedProject.gallery.length + 1})
@@ -374,41 +344,76 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
 
                   {/* Video Viewer */}
                   {selectedProject.video && activeMediaTab === 'video' ? (
-                    <div className="relative overflow-hidden rounded-2xl aspect-video bg-black border border-white/10 shadow-xl group">
-                      <video
-                        src={selectedProject.video}
-                        poster={selectedProject.poster || selectedProject.img}
-                        controls
-                        autoPlay
-                        loop
-                        playsInline
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="relative rounded-2xl overflow-hidden bg-black border border-white/15 shadow-2xl group">
+                      {/* Browser Mockup Chrome Header */}
+                      <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-950/90 border-b border-white/10 text-white/50 text-[10px]">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                        </div>
+                        <span className="font-mono text-[9px] tracking-widest text-zinc-400 truncate max-w-[200px]">
+                          {selectedProject.demo ? new URL(selectedProject.demo).hostname : `${selectedProject.title.toLowerCase()}.local`}
+                        </span>
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                          HD Video
+                        </span>
+                      </div>
+                      
+                      <div className="relative aspect-video bg-black">
+                        <video
+                          src={selectedProject.video}
+                          poster={selectedProject.poster || selectedProject.img}
+                          controls
+                          autoPlay
+                          loop
+                          playsInline
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     </div>
                   ) : (
-                    /* Image Gallery Viewer */
+                    /* Image / Foto Gallery Viewer */
                     <div className="flex flex-col space-y-3">
                       {(() => {
                         const galleryList = [selectedProject.img, ...(selectedProject.gallery || [])];
                         return (
                           <>
-                            <div className="relative overflow-hidden rounded-2xl aspect-video bg-black/40 border border-[var(--border)] shadow-xl">
-                              <img 
-                                src={galleryList[activeGalleryIndex] || selectedProject.img} 
-                                alt={`${selectedProject.title} ${activeGalleryIndex}`}
-                                className="w-full h-full object-cover transition duration-500"
-                              />
+                            <div className="relative rounded-2xl overflow-hidden bg-black border border-white/15 shadow-2xl">
+                              {/* Browser Mockup Chrome Header */}
+                              <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-950/90 border-b border-white/10 text-white/50 text-[10px]">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
+                                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+                                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                                </div>
+                                <span className="font-mono text-[9px] tracking-widest text-zinc-400">
+                                  {t.screenshots} {activeGalleryIndex + 1} / {galleryList.length}
+                                </span>
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                                  {selectedProject.title}
+                                </span>
+                              </div>
+
+                              <div className="relative aspect-video bg-black/60 flex items-center justify-center">
+                                <img 
+                                  src={galleryList[activeGalleryIndex] || selectedProject.img} 
+                                  alt={`${selectedProject.title} ${activeGalleryIndex}`}
+                                  className="w-full h-full object-contain"
+                                />
+                              </div>
                             </div>
+
                             {galleryList.length > 1 && (
                               <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
                                 {galleryList.map((thumb, idx) => (
                                   <button
                                     key={idx}
                                     onClick={() => setActiveGalleryIndex(idx)}
-                                    className={`relative w-20 h-12 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
+                                    className={`relative w-20 h-12 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
                                       activeGalleryIndex === idx
-                                        ? 'border-purple-500 scale-105 shadow-md'
-                                        : 'border-transparent opacity-60 hover:opacity-100'
+                                        ? 'border-purple-500 scale-105 shadow-lg shadow-purple-900/30'
+                                        : 'border-white/10 opacity-60 hover:opacity-100'
                                     }`}
                                   >
                                     <img src={thumb} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
@@ -426,24 +431,24 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                 {/* Right Column: Project Metadata, Highlights & CTAs */}
                 <div className="lg:col-span-5 flex flex-col space-y-6">
                   <div>
-                    <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-3">
+                    <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-3 text-white">
                       {selectedProject.title}
                     </h3>
-                    <p className="text-xs md:text-sm text-[var(--text-muted)] leading-relaxed">
+                    <p className="text-xs md:text-sm text-zinc-300 leading-relaxed">
                       {selectedProject.description[lang]}
                     </p>
                   </div>
 
                   {/* Highlights / Keunggulan Utama */}
                   {selectedProject.highlights && selectedProject.highlights[lang] && (
-                    <div className="p-4 rounded-2xl bg-[var(--icon-bg)]/60 border border-[var(--border)] space-y-3">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] flex items-center gap-1.5">
-                        <CheckCircle2 size={13} className="text-emerald-500" /> {t.keyHighlights}
+                    <div className="p-4.5 rounded-2xl bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 space-y-3 shadow-inner">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-1.5">
+                        <Sparkles size={13} className="text-purple-400" /> {t.keyHighlights}
                       </p>
-                      <ul className="space-y-2">
+                      <ul className="space-y-2.5">
                         {selectedProject.highlights[lang].map((point, idx) => (
-                          <li key={idx} className="text-[11px] flex items-start gap-2 leading-relaxed opacity-90">
-                            <span className="text-emerald-500 font-bold mt-0.5">•</span>
+                          <li key={idx} className="text-[11px] flex items-start gap-2.5 leading-relaxed text-zinc-300">
+                            <CheckCircle2 size={13} className="text-emerald-400 mt-0.5 flex-shrink-0" />
                             <span>{point}</span>
                           </li>
                         ))}
@@ -453,14 +458,14 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
 
                   {/* Tech Stack Pills */}
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2.5">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 mb-2.5">
                       Technologies
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {selectedProject.tech.map((techName, idx) => (
                         <span 
                           key={idx}
-                          className="px-2.5 py-1 rounded-lg bg-[var(--icon-bg)] text-[var(--text)] text-[10px] font-bold uppercase tracking-tight border border-[var(--border)]"
+                          className="px-3 py-1 rounded-lg bg-white/[0.06] text-white/90 text-[10px] font-semibold tracking-wide border border-white/10 hover:border-purple-400/40 transition-colors"
                         >
                           {techName}
                         </span>
@@ -475,7 +480,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                         href={selectedProject.demo}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[var(--accent)] text-white text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition-all shadow-lg"
+                        className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-purple-900/30"
                       >
                         <ExternalLink size={14} /> {t.visitLive}
                       </a>
@@ -485,7 +490,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                         href={selectedProject.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--text)] hover:text-[var(--bg)] text-[10px] font-bold uppercase tracking-widest transition-all"
+                        className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/[0.08] hover:bg-white/20 text-white border border-white/10 text-[10px] font-bold uppercase tracking-widest transition-all"
                       >
                         <Globe size={14} /> {t.viewRepo}
                       </a>
@@ -508,11 +513,11 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
             </div>
 
             {/* Modal Bottom Navigation Bar (Prev / Next Project) */}
-            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-t border-[var(--border)] bg-[var(--card-bg)]/90 backdrop-blur-md">
+            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-t border-white/10 bg-[#0c1017]/90 backdrop-blur-md">
               <button
                 type="button"
                 onClick={handlePrevProject}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-[var(--icon-bg)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-white/[0.08] hover:bg-white/20 text-white transition-all"
               >
                 <ChevronLeft size={14} /> {t.prevProject}
               </button>
@@ -524,8 +529,8 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                     onClick={() => setSelectedProject(p)}
                     className={`h-1.5 rounded-full transition-all ${
                       p.id === selectedProject.id
-                        ? 'w-6 bg-[var(--text)]'
-                        : 'w-2 bg-[var(--border)] hover:bg-[var(--text-muted)]'
+                        ? 'w-6 bg-purple-500'
+                        : 'w-2 bg-white/20 hover:bg-white/40'
                     }`}
                     title={p.title}
                   />
@@ -535,7 +540,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
               <button
                 type="button"
                 onClick={handleNextProject}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-[var(--icon-bg)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-white/[0.08] hover:bg-white/20 text-white transition-all"
               >
                 {t.nextProject} <ChevronRight size={14} />
               </button>
