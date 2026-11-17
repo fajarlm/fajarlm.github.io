@@ -128,7 +128,7 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['Next.js', 'WASM', 'Tailwind', 'TypeScript', 'Web APIs'],
     img: docmorphImg,
-    video: '/videos/docmorph_preview.webm',
+    video: '/videos/docmorph_demo.webm',
     highlights: {
       en: [
         '100% Client-side document processing with WebAssembly (zero data uploads)',
@@ -185,7 +185,7 @@ export const projectsData: Project[] = [
     type: 'web',
     tech: ['React', 'Vite', 'Canvas/SVG', 'SQL Parser', 'Tailwind'],
     img: chenErdImg,
-    video: '/videos/chen_erd_preview.webm',
+    video: '/videos/chen_erd_demo.webm',
     highlights: {
       en: [
         'Authentic 1976 Peter Chen Entity-Relationship Diagram modeling',
@@ -214,7 +214,7 @@ export const projectsData: Project[] = [
     type: 'web', 
     tech: ['React','Flowbite','Tailwind'], 
     img: quranic, 
-    video: '/videos/quranic_preview.webm',
+    video: '/videos/quranic_demo.webm',
     highlights: {
       en: [
         'Complete 114 Surahs with authentic typography and tajweed guidance',
