@@ -12,7 +12,9 @@ import {
   Maximize2,
   CheckCircle2,
   Film,
-  Sparkles
+  Sparkles,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import SpotlightCard from './ui/SpotlightCard';
 import AOS from 'aos';
@@ -28,6 +30,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeMediaTab, setActiveMediaTab] = useState<'video' | 'gallery'>('video');
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
 
   const itemsPerPage = 6;
   const t = translations[lang].projects;
@@ -155,19 +158,19 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                   </div>
 
                   {/* Top-Right Type Badge: Generous padding, not cramped */}
-                  <div className="absolute top-3.5 right-3.5 bg-[var(--card)]/90 backdrop-blur-md text-[var(--text)] px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[var(--border)] shadow-md pointer-events-none">
+                  <div className="absolute top-4 right-4 bg-[var(--card)]/95 backdrop-blur-md text-[var(--text)] px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[var(--border)] shadow-md pointer-events-none z-20">
                     {p.type}
                   </div>
 
                   {/* Top-Left Video / Photo Count Badges: Generous padding */}
-                  <div className="absolute top-3.5 left-3.5 flex items-center gap-2 pointer-events-none">
+                  <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none z-20">
                     {hasVideo && (
-                      <span className="bg-purple-600 text-white px-3.5 py-1.5 rounded-full text-[10px] font-bold tracking-wider flex items-center gap-1.5 border border-purple-400/40 shadow-md">
+                      <span className="bg-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wide flex items-center gap-1.5 border border-purple-400/40 shadow-md">
                         <Play size={10} className="fill-white" /> {t.videoBadge}
                       </span>
                     )}
                     {p.gallery && p.gallery.length > 0 && (
-                      <span className="bg-black/80 backdrop-blur-md text-white px-3.5 py-1.5 rounded-full text-[10px] font-bold tracking-wider flex items-center gap-1.5 border border-white/20 shadow-md">
+                      <span className="bg-black/85 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wide flex items-center gap-1.5 border border-white/20 shadow-md">
                         <ImageIcon size={11} /> {p.gallery.length + 1} {t.screenshots}
                       </span>
                     )}
@@ -186,7 +189,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                   </div>
                   
                   {/* High Contrast Description */}
-                  <p className="text-xs md:text-[13px] text-[var(--text-muted)] mb-5 line-clamp-2 leading-relaxed font-normal">
+                  <p className="text-xs md:text-[13px] text-[var(--text)]/80 dark:text-zinc-300 mb-5 line-clamp-2 leading-relaxed font-normal">
                     {p.description[lang]}
                   </p>
                   
@@ -195,7 +198,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                     {p.tech.map((techName, idx) => (
                       <span 
                         key={idx} 
-                        className="px-3 py-1.5 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)] text-[10px] font-semibold tracking-wide shadow-xs transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                        className="px-3.5 py-1.5 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] border border-[var(--border)] text-[10px] font-semibold tracking-wide shadow-xs transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
                       >
                         {techName}
                       </span>
@@ -347,7 +350,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
 
                   {/* Video Viewer */}
                   {selectedProject.video && activeMediaTab === 'video' ? (
-                    <div className="relative rounded-2xl overflow-hidden bg-black border border-[var(--border)] shadow-2xl group">
+                    <div className="relative rounded-2xl overflow-hidden bg-black border border-[var(--border)] shadow-2xl group flex flex-col">
                       {/* Browser Mockup Chrome Header */}
                       <div className="flex items-center justify-between px-4 py-2.5 bg-black/85 border-b border-white/10 text-white/60 text-[10px]">
                         <div className="flex items-center gap-1.5">
@@ -358,21 +361,48 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                         <span className="font-mono text-[9px] tracking-widest text-zinc-300 truncate max-w-[200px]">
                           {selectedProject.demo ? new URL(selectedProject.demo).hostname : `${selectedProject.title.toLowerCase()}.local`}
                         </span>
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/15 px-2.5 py-0.5 rounded-full border border-purple-500/30">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/15 px-3 py-1 rounded-full border border-purple-500/30">
                           App Testing Demo
                         </span>
                       </div>
                       
                       <div className="relative aspect-video bg-black">
                         <video
+                          key={`${selectedProject.id}-${selectedProject.video}`}
                           src={selectedProject.video}
                           poster={selectedProject.poster || selectedProject.img}
                           controls
                           autoPlay
                           loop
+                          muted={isVideoMuted}
                           playsInline
                           className="w-full h-full object-cover"
                         />
+                      </div>
+
+                      {/* Audio & Sound Status Bar */}
+                      <div className="flex items-center justify-between px-4 py-2.5 bg-[var(--icon-bg)] border-t border-[var(--border)] text-[11px] text-[var(--text)]">
+                        <div className="flex items-center gap-2">
+                          <Volume2 size={14} className="text-purple-500 animate-pulse flex-shrink-0" />
+                          <span className="font-medium text-[11px] text-[var(--text)]">
+                            {lang === 'en' ? 'Tutorial BGM & Audio Included' : 'Walkthrough Dilengkapi Musik Latar & Audio'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsVideoMuted(!isVideoMuted)}
+                          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all border ${
+                            isVideoMuted
+                              ? 'bg-amber-500/15 text-amber-500 border-amber-500/30 hover:bg-amber-500/25'
+                              : 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/25'
+                          }`}
+                        >
+                          {isVideoMuted ? (
+                            <><VolumeX size={12} /> {t.soundOn || 'Bunyikan'}</>
+                          ) : (
+                            <><Volume2 size={12} /> {t.soundOff || 'Senyapkan'}</>
+                          )}
+                        </button>
                       </div>
                     </div>
                   ) : (
@@ -437,20 +467,20 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                     <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-3 text-[var(--text)]">
                       {selectedProject.title}
                     </h3>
-                    <p className="text-xs md:text-sm text-[var(--text-muted)] leading-relaxed">
+                    <p className="text-xs md:text-sm text-[var(--text)]/85 dark:text-zinc-200 leading-relaxed font-normal">
                       {selectedProject.description[lang]}
                     </p>
                   </div>
 
                   {/* Highlights / Keunggulan Utama */}
                   {selectedProject.highlights && selectedProject.highlights[lang] && (
-                    <div className="p-5 rounded-2xl bg-[var(--icon-bg)]/70 border border-[var(--border)] space-y-3.5 shadow-xs">
+                    <div className="p-5 md:p-6 rounded-2xl bg-[var(--icon-bg)]/80 border border-[var(--border)] space-y-3.5 shadow-xs">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text)] flex items-center gap-2">
                         <Sparkles size={14} className="text-[var(--accent)]" /> {t.keyHighlights}
                       </p>
                       <ul className="space-y-2.5">
                         {selectedProject.highlights[lang].map((point, idx) => (
-                          <li key={idx} className="text-xs leading-relaxed text-[var(--text)] flex items-start gap-2.5">
+                          <li key={idx} className="text-xs md:text-[13px] leading-relaxed text-[var(--text)] font-normal flex items-start gap-2.5">
                             <CheckCircle2 size={14} className="text-emerald-500 mt-0.5 flex-shrink-0" />
                             <span>{point}</span>
                           </li>
@@ -468,7 +498,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                       {selectedProject.tech.map((techName, idx) => (
                         <span 
                           key={idx}
-                          className="px-3 py-1.5 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] text-[10px] font-semibold tracking-wide border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
+                          className="px-3.5 py-1.5 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] text-[11px] font-semibold tracking-wide border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
                         >
                           {techName}
                         </span>
