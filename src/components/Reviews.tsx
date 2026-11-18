@@ -18,7 +18,9 @@ import {
   Trash2,
   Shield,
   ShieldAlert,
-  KeyRound
+  KeyRound,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { translations } from '../data/portfolioData';
@@ -88,17 +90,96 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
   const [direction, setDirection] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
 
-  // Admin / Owner Moderation Mode
+  // Admin / Owner Moderation Mode (Stealth & Anti-Brute Force)
+  const ADMIN_SESSION_KEY = '_fp_owner_auth';
   const [isAdminMode, setIsAdminMode] = useState<boolean>(() => {
     try {
-      return sessionStorage.getItem('fajar_portfolio_admin_auth') === 'true';
+      return sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true';
     } catch {
       return false;
     }
   });
   const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
   const [adminPasscode, setAdminPasscode] = useState('');
+  const [showPasscodeText, setShowPasscodeText] = useState(false);
   const [adminPasscodeError, setAdminPasscodeError] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutRemaining, setLockoutRemaining] = useState(0);
+
+  // Secret badge click counter ref (Easter egg: 5x click)
+  const secretBadgeClickRef = React.useRef<{ count: number; timer: ReturnType<typeof setTimeout> | null }>({
+    count: 0,
+    timer: null
+  });
+
+  // Cooldown countdown timer for brute force prevention
+  useEffect(() => {
+    if (lockoutRemaining <= 0) return;
+    const timer = setInterval(() => {
+      setLockoutRemaining(prev => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [lockoutRemaining]);
+
+  // Secret Triggers: Keyboard Shortcut (Ctrl+Shift+M), Custom Event, and URL query (?mod=owner or #moderasi)
+  useEffect(() => {
+    const openModal = () => {
+      setAdminPasscode('');
+      setAdminPasscodeError(false);
+      setShowPasscodeText(false);
+      setShowAdminLoginModal(true);
+    };
+
+    // 1. Keyboard Shortcut (Ctrl+Shift+M or Cmd+Shift+M)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'M' || e.key === 'm')) {
+        e.preventDefault();
+        openModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    // 2. Custom event from other components (like Footer easter egg)
+    const handleCustomEvent = () => {
+      openModal();
+    };
+    window.addEventListener('open-owner-moderation', handleCustomEvent);
+
+    // 3. Secret URL query (?mod=owner or #moderasi)
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mod') === 'owner' || window.location.hash === '#moderasi') {
+        openModal();
+        const url = new URL(window.location.href);
+        url.searchParams.delete('mod');
+        if (url.hash === '#moderasi') url.hash = '';
+        window.history.replaceState({}, document.title, url.toString());
+      }
+    } catch {}
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('open-owner-moderation', handleCustomEvent);
+    };
+  }, []);
+
+  const handleSecretBadgeClick = () => {
+    if (secretBadgeClickRef.current.timer) {
+      clearTimeout(secretBadgeClickRef.current.timer);
+    }
+    secretBadgeClickRef.current.count += 1;
+    if (secretBadgeClickRef.current.count >= 5) {
+      secretBadgeClickRef.current.count = 0;
+      setAdminPasscode('');
+      setAdminPasscodeError(false);
+      setShowPasscodeText(false);
+      setShowAdminLoginModal(true);
+    } else {
+      secretBadgeClickRef.current.timer = setTimeout(() => {
+        secretBadgeClickRef.current.count = 0;
+      }, 2000);
+    }
+  };
 
   // Delete confirmation state
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
@@ -175,24 +256,32 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const correctPin = import.meta.env.VITE_ADMIN_PIN || 'fajar';
-    if (adminPasscode.trim() === correctPin || adminPasscode.trim() === 'admin') {
+    if (lockoutRemaining > 0) return;
+
+    const correctPin = import.meta.env.VITE_ADMIN_PIN || 'fajar2026';
+    if (adminPasscode.trim() === correctPin) {
       setIsAdminMode(true);
-      sessionStorage.setItem('fajar_portfolio_admin_auth', 'true');
+      sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
       setShowAdminLoginModal(false);
       setAdminPasscode('');
       setAdminPasscodeError(false);
+      setFailedAttempts(0);
       setToastMessage(lang === 'en' ? 'Owner moderation mode enabled.' : 'Mode moderasi pemilik aktif.');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 4000);
     } else {
+      const nextFailures = failedAttempts + 1;
+      setFailedAttempts(nextFailures);
       setAdminPasscodeError(true);
+      if (nextFailures >= 4) {
+        setLockoutRemaining(60); // 60-second cooldown on 4 consecutive failures
+      }
     }
   };
 
   const handleAdminLogout = () => {
     setIsAdminMode(false);
-    sessionStorage.removeItem('fajar_portfolio_admin_auth');
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
     setToastMessage(lang === 'en' ? 'Owner moderation mode disabled.' : 'Mode moderasi pemilik dinonaktifkan.');
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
@@ -349,7 +438,11 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12" data-aos="fade-up">
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--icon-bg)] border border-[var(--border)] text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--accent)] mb-4 shadow-xs">
+            <div 
+              onClick={handleSecretBadgeClick}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--icon-bg)] border border-[var(--border)] text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--accent)] mb-4 shadow-xs select-none cursor-default"
+              title=""
+            >
               <Quote size={12} /> {t.badge}
             </div>
             <h2 className="text-3xl md:text-5xl font-black tracking-tighter">
@@ -403,8 +496,8 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
               </div>
             )}
 
-            {/* Owner Moderation Mode Button */}
-            {isAdminMode ? (
+            {/* Owner Moderation Indicator (Only visible to owner when active) */}
+            {isAdminMode && (
               <button
                 type="button"
                 onClick={handleAdminLogout}
@@ -413,20 +506,6 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
               >
                 <ShieldAlert size={15} />
                 <span className="hidden sm:inline">{lang === 'en' ? 'Owner Mode Active' : 'Mode Pemilik Aktif'}</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setAdminPasscode('');
-                  setAdminPasscodeError(false);
-                  setShowAdminLoginModal(true);
-                }}
-                className="p-3.5 rounded-2xl bg-[var(--icon-bg)] text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--border)] border border-[var(--border)] text-xs font-bold transition-all shadow-xs"
-                title={lang === 'en' ? 'Owner Moderation Mode' : 'Mode Moderasi Pemilik'}
-                aria-label="Owner Moderation Mode"
-              >
-                <Shield size={16} />
               </button>
             )}
 
@@ -685,7 +764,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
         </div>
       )}
 
-      {/* OWNER / ADMIN PASSCODE MODAL */}
+      {/* OWNER / ADMIN PASSCODE MODAL (Anti-Brute Force Protected) */}
       {showAdminLoginModal && (
         <div 
           data-lenis-prevent
@@ -707,7 +786,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                     {lang === 'en' ? 'Owner Verification' : 'Verifikasi Pemilik'}
                   </h3>
                   <p className="text-[11px] text-[var(--text-muted)]">
-                    {lang === 'en' ? 'Enter passcode to moderate reviews' : 'Masukkan kode untuk moderasi ulasan'}
+                    {lang === 'en' ? 'Enter secret passcode to moderate' : 'Masukkan kode keamanan untuk moderasi'}
                   </p>
                 </div>
               </div>
@@ -729,23 +808,45 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                 <div className="relative flex items-center">
                   <KeyRound size={15} className="absolute left-3.5 text-[var(--text-muted)] pointer-events-none" />
                   <input
-                    type="password"
+                    type={showPasscodeText ? 'text' : 'password'}
                     autoFocus
                     required
+                    disabled={lockoutRemaining > 0}
                     value={adminPasscode}
                     onChange={e => {
                       setAdminPasscode(e.target.value);
                       setAdminPasscodeError(false);
                     }}
-                    placeholder={lang === 'en' ? 'Enter owner passcode...' : 'Masukkan kode pemilik...'}
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--icon-bg)] border text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none transition-all ${
+                    placeholder={lang === 'en' ? 'Enter secret passcode...' : 'Masukkan kode rahasia...'}
+                    className={`w-full pl-10 pr-10 py-2.5 rounded-xl bg-[var(--icon-bg)] border text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none transition-all ${
                       adminPasscodeError ? 'border-rose-500' : 'border-[var(--border)] focus:border-[var(--accent)]'
-                    }`}
+                    } disabled:opacity-50`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasscodeText(!showPasscodeText)}
+                    className="absolute right-3 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors p-1"
+                    tabIndex={-1}
+                    aria-label={showPasscodeText ? 'Hide passcode' : 'Show passcode'}
+                  >
+                    {showPasscodeText ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
                 </div>
-                {adminPasscodeError && (
+                {lockoutRemaining > 0 ? (
+                  <p className="text-[10px] text-rose-500 mt-1.5 font-medium">
+                    {lang === 'en'
+                      ? `Too many failed attempts. Cooldown: ${lockoutRemaining}s.`
+                      : `Terlalu banyak percobaan gagal. Silakan tunggu ${lockoutRemaining} detik.`}
+                  </p>
+                ) : adminPasscodeError ? (
                   <p className="text-[10px] text-rose-500 mt-1">
-                    {lang === 'en' ? 'Incorrect passcode.' : 'Kode keamanan salah.'}
+                    {lang === 'en'
+                      ? `Incorrect passcode (${4 - failedAttempts} attempts remaining).`
+                      : `Kode keamanan salah (tersisa ${4 - failedAttempts} percobaan).`}
+                  </p>
+                ) : (
+                  <p className="text-[10px] text-[var(--text-muted)] mt-1 opacity-70">
+                    {lang === 'en' ? 'Shortcut: Ctrl+Shift+M' : 'Pintasan: Ctrl+Shift+M'}
                   </p>
                 )}
               </div>
@@ -760,7 +861,8 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[var(--accent)] text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-all shadow-md"
+                  disabled={lockoutRemaining > 0 || !adminPasscode.trim()}
+                  className="px-5 py-2 rounded-xl bg-[var(--accent)] text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 disabled:opacity-50 transition-all shadow-md"
                 >
                   {lang === 'en' ? 'Unlock' : 'Buka Akses'}
                 </button>

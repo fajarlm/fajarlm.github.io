@@ -86,8 +86,28 @@ const Footer: React.FC<FooterProps> = ({ lang }) => {
           <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 text-[var(--text)]">
             {t.copyright}
           </p>
-          <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 text-[var(--text)]">
-            {lang === 'en' ? 'Made with ♥ in Bogor, Indonesia' : 'Dibuat dengan ♥ di Bogor, Indonesia'}
+          <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 text-[var(--text)] select-none">
+            {lang === 'en' ? 'Made with ' : 'Dibuat dengan '}
+            <span
+              onClick={() => {
+                const win = window as unknown as { __secretHeartCount?: number; __secretHeartTimer?: ReturnType<typeof setTimeout> };
+                win.__secretHeartCount = (win.__secretHeartCount || 0) + 1;
+                if (win.__secretHeartTimer) clearTimeout(win.__secretHeartTimer);
+                if (win.__secretHeartCount >= 3) {
+                  win.__secretHeartCount = 0;
+                  window.dispatchEvent(new CustomEvent('open-owner-moderation'));
+                } else {
+                  win.__secretHeartTimer = setTimeout(() => {
+                    win.__secretHeartCount = 0;
+                  }, 1500);
+                }
+              }}
+              className="cursor-pointer text-rose-500 hover:scale-125 inline-block transition-transform duration-200"
+              title=""
+            >
+              ♥
+            </span>
+            {lang === 'en' ? ' in Bogor, Indonesia' : ' di Bogor, Indonesia'}
           </p>
         </div>
       </div>
