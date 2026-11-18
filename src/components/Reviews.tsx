@@ -11,9 +11,7 @@ import {
   Briefcase, 
   HeartHandshake, 
   AlertCircle, 
-  Sparkles, 
-  Loader2,
-  Eye
+  Loader2
 } from 'lucide-react';
 import { translations } from '../data/portfolioData';
 import SpotlightCard from './ui/SpotlightCard';
@@ -25,11 +23,11 @@ interface ReviewsProps {
 }
 
 const RELATION_OPTIONS = [
-  { value: 'Colleague', label: { en: 'Colleague / Coworker', id: 'Rekan Kerja' } },
-  { value: 'Client', label: { en: 'Client / Customer', id: 'Klien' } },
+  { value: 'Client', label: { en: 'Client', id: 'Klien' } },
+  { value: 'Colleague', label: { en: 'Colleague', id: 'Rekan Kerja' } },
   { value: 'Project Partner', label: { en: 'Project Partner', id: 'Rekan Proyek' } },
-  { value: 'Mentor', label: { en: 'Mentor / Teacher', id: 'Mentor / Pembimbing' } },
-  { value: 'Peer', label: { en: 'Peer / Classmate', id: 'Teman / Rekan Belajar' } }
+  { value: 'Mentor', label: { en: 'Mentor', id: 'Mentor' } },
+  { value: 'Peer', label: { en: 'Peer / Friend', id: 'Teman' } }
 ];
 
 export const renderStars = (rating: number, size = 15) => {
@@ -40,7 +38,7 @@ export const renderStars = (rating: number, size = 15) => {
         <Star
           key={i}
           size={size}
-          className="fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]"
+          className="fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.35)]"
         />
       );
     } else if (rating >= i - 0.5) {
@@ -48,7 +46,7 @@ export const renderStars = (rating: number, size = 15) => {
         <StarHalf
           key={i}
           size={size}
-          className="fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]"
+          className="fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.35)]"
         />
       );
     } else {
@@ -70,7 +68,6 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
   // Realtime reviews state synced with Firebase Firestore / local cache
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -151,8 +148,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
         rating: 5.0,
         message: ''
       });
-      setShowPreview(false);
-      setToastMessage(t.successToast || (lang === 'en' ? 'Thank you! Your review has been saved.' : 'Terima kasih! Ulasan Anda telah tersimpan.'));
+      setToastMessage(t.successToast || (lang === 'en' ? 'Thank you! Your review has been saved.' : 'Terima kasih! Ulasan Anda berhasil disimpan.'));
       setShowToast(true);
       setTimeout(() => setShowToast(false), 5000);
     } catch (err: unknown) {
@@ -179,11 +175,11 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
   const currentDisplayRating = hoverRating !== null ? hoverRating : formData.rating;
 
   const getRatingFeedback = (val: number) => {
-    if (val >= 5.0) return lang === 'en' ? 'Exceptional (5.0/5.0) ★★★★★' : 'Sempurna & Sangat Puas (5.0/5.0) ★★★★★';
-    if (val >= 4.5) return lang === 'en' ? 'Outstanding (4.5/5.0) ★★★★½' : 'Luar Biasa (4.5/5.0) ★★★★½';
-    if (val >= 4.0) return lang === 'en' ? 'Very Good (4.0/5.0) ★★★★☆' : 'Sangat Baik (4.0/5.0) ★★★★☆';
-    if (val >= 3.5) return lang === 'en' ? 'Good (3.5/5.0) ★★★½☆' : 'Bagus & Memuaskan (3.5/5.0) ★★★½☆';
-    return lang === 'en' ? 'Fair (3.0/5.0) ★★★☆☆' : 'Cukup Baik (3.0/5.0) ★★★☆☆';
+    if (val >= 5.0) return lang === 'en' ? '5.0 ★ Exceptional' : '5.0 ★ Sempurna';
+    if (val >= 4.5) return lang === 'en' ? '4.5 ★ Outstanding' : '4.5 ★ Luar Biasa';
+    if (val >= 4.0) return lang === 'en' ? '4.0 ★ Very Good' : '4.0 ★ Sangat Baik';
+    if (val >= 3.5) return lang === 'en' ? '3.5 ★ Good' : '3.5 ★ Bagus';
+    return lang === 'en' ? '3.0 ★ Fair' : '3.0 ★ Cukup';
   };
 
   return (
@@ -255,7 +251,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
               {t.emptyTitle}
             </h3>
             <p className="text-xs text-[var(--text-muted)] mt-2 mb-8 max-w-sm mx-auto leading-relaxed">
-              {t.emptyDesc || (lang === 'en' ? 'Be the first to leave a review and share your experience working with Fajar!' : 'Jadilah yang pertama menuliskan ulasan dan pengalaman berkolaborasi bersama Fajar!')}
+              {t.emptyDesc}
             </p>
             <button
               onClick={() => {
@@ -330,26 +326,23 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
         )}
       </div>
 
-      {/* REFINED REVIEW MODAL (Clean, Polished, Responsive) */}
+      {/* COMPACT & POLISHED REVIEW MODAL (ZERO INNER SCROLL, INTUITIVE UX) */}
       {isModalOpen && (
         <div 
-          className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/65 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
+          className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200"
           onClick={() => setIsModalOpen(false)}
         >
           <div 
-            className="w-full max-w-xl my-auto rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl border border-[var(--border)] relative bg-[var(--card)] text-[var(--text)] overflow-hidden animate-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col"
+            className="w-full max-w-lg rounded-3xl p-5 sm:p-6 shadow-2xl border border-[var(--border)] relative bg-[var(--card)] text-[var(--text)] overflow-hidden animate-in zoom-in-95 duration-200"
             onClick={e => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-start justify-between pb-4 border-b border-[var(--border)] shrink-0">
+            <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[var(--border)]">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--icon-bg)] text-[10px] font-bold uppercase tracking-wider text-[var(--accent)] border border-[var(--border)] mb-2">
-                  <Sparkles size={11} /> {t.badge}
-                </div>
-                <h3 className="text-xl md:text-2xl font-black tracking-tight text-[var(--text)]">
+                <h3 className="text-lg sm:text-xl font-black tracking-tight text-[var(--text)]">
                   {t.modalTitle}
                 </h3>
-                <p className="text-xs text-[var(--text-muted)] mt-1">
+                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
                   {t.modalDesc}
                 </p>
               </div>
@@ -357,266 +350,213 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-2.5 rounded-full bg-[var(--icon-bg)] text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all shrink-0 hover:rotate-90"
+                className="p-1.5 rounded-full bg-[var(--icon-bg)] text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all shrink-0 hover:rotate-90"
                 aria-label="Close"
               >
                 <X size={16} />
               </button>
             </div>
 
-            {/* Modal Scrollable Body */}
-            <div className="flex-1 overflow-y-auto py-5 space-y-5 pr-1 [scrollbar-width:thin] [scrollbar-color:var(--accent)_transparent]">
-              {/* Error Banner */}
-              {errorMessage && (
-                <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs animate-in fade-in">
-                  <AlertCircle size={16} className="shrink-0 mt-0.5" />
-                  <span className="font-medium">{errorMessage}</span>
-                </div>
-              )}
+            {/* Error Banner */}
+            {errorMessage && (
+              <div className="flex items-center gap-2 p-2.5 mb-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs animate-in fade-in">
+                <AlertCircle size={14} className="shrink-0" />
+                <span className="font-medium text-[11px]">{errorMessage}</span>
+              </div>
+            )}
 
-              {/* Form */}
-              <form id="reviewForm" onSubmit={handleSubmit} className="space-y-4">
-                {/* Full Name */}
+            {/* Form with Clean, Compact Spacing (No Scroll Needed) */}
+            <form id="reviewForm" onSubmit={handleSubmit} className="space-y-3">
+              {/* Row 1: Full Name */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text)] opacity-90">
+                    {t.nameLabel} <span className="text-rose-500">*</span>
+                  </label>
+                  <span className="text-[9px] text-[var(--text-muted)] font-mono">
+                    {formData.name.length}/60
+                  </span>
+                </div>
+                <div className="relative flex items-center">
+                  <User size={14} className="absolute left-3 text-[var(--text-muted)] pointer-events-none" />
+                  <input
+                    type="text"
+                    required
+                    maxLength={60}
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    placeholder={t.namePlaceholder}
+                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Relationship Selector (Clear Pills) */}
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider mb-1 text-[var(--text)] opacity-90">
+                  {t.relationLabel || (lang === 'en' ? 'Relationship' : 'Hubungan Kolaborasi')}
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {RELATION_OPTIONS.map((opt) => {
+                    const isSelected = formData.relation === opt.value;
+                    return (
+                      <button
+                        type="button"
+                        key={opt.value}
+                        onClick={() => setFormData({ ...formData, relation: opt.value })}
+                        className={`px-3 py-1 rounded-lg text-[10px] font-semibold transition-all border ${
+                          isSelected
+                            ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-xs font-bold'
+                            : 'bg-[var(--icon-bg)] text-[var(--text-muted)] hover:text-[var(--text)] border-[var(--border)] hover:border-[var(--text)]/40'
+                        }`}
+                      >
+                        {opt.label[lang]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Row 3: Role (Job Title) & Company / School (Optional) */}
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-[11px] font-bold uppercase tracking-wider opacity-85">
-                      {t.nameLabel} <span className="text-rose-500">*</span>
-                    </label>
-                    <span className="text-[10px] text-[var(--text-muted)] font-mono">
-                      {formData.name.length}/60
-                    </span>
-                  </div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1 text-[var(--text-muted)]">
+                    {t.roleLabel}
+                  </label>
                   <div className="relative flex items-center">
-                    <User size={15} className="absolute left-3.5 text-[var(--text-muted)] pointer-events-none" />
+                    <Briefcase size={13} className="absolute left-3 text-[var(--text-muted)] pointer-events-none" />
                     <input
                       type="text"
-                      required
-                      maxLength={60}
-                      value={formData.name}
-                      onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      placeholder={t.namePlaceholder}
-                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 transition-all shadow-xs"
+                      maxLength={50}
+                      value={formData.role}
+                      onChange={e => setFormData({ ...formData, role: e.target.value })}
+                      placeholder={t.rolePlaceholder}
+                      className="w-full pl-8 pr-3 py-2 rounded-xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/40 focus:outline-none focus:border-[var(--accent)] transition-all"
                     />
                   </div>
                 </div>
 
-                {/* Role & Company Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider mb-1.5 opacity-85">
-                      {t.roleLabel}
-                    </label>
-                    <div className="relative flex items-center">
-                      <Briefcase size={15} className="absolute left-3.5 text-[var(--text-muted)] pointer-events-none" />
-                      <input
-                        type="text"
-                        maxLength={60}
-                        value={formData.role}
-                        onChange={e => setFormData({ ...formData, role: e.target.value })}
-                        placeholder={t.rolePlaceholder}
-                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 transition-all shadow-xs"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider mb-1.5 opacity-85">
-                      {t.companyLabel}
-                    </label>
-                    <div className="relative flex items-center">
-                      <Building size={15} className="absolute left-3.5 text-[var(--text-muted)] pointer-events-none" />
-                      <input
-                        type="text"
-                        maxLength={60}
-                        value={formData.company}
-                        onChange={e => setFormData({ ...formData, company: e.target.value })}
-                        placeholder={t.companyPlaceholder}
-                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 transition-all shadow-xs"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Relationship Selector */}
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider mb-2 opacity-85">
-                    {lang === 'en' ? 'Collaboration Context' : 'Hubungan / Konteks Kerja Sama'}
+                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1 text-[var(--text-muted)]">
+                    {t.companyLabel}
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {RELATION_OPTIONS.map((opt) => {
-                      const isSelected = formData.relation === opt.value;
-                      return (
-                        <button
-                          type="button"
-                          key={opt.value}
-                          onClick={() => setFormData({ ...formData, relation: opt.value })}
-                          className={`px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
-                            isSelected
-                              ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-md shadow-[var(--accent)]/20 scale-[1.02]'
-                              : 'bg-[var(--icon-bg)] text-[var(--text-muted)] hover:text-[var(--text)] border-[var(--border)] hover:border-[var(--text)]/40'
-                          }`}
-                        >
-                          {opt.label[lang]}
-                        </button>
-                      );
-                    })}
+                  <div className="relative flex items-center">
+                    <Building size={13} className="absolute left-3 text-[var(--text-muted)] pointer-events-none" />
+                    <input
+                      type="text"
+                      maxLength={50}
+                      value={formData.company}
+                      onChange={e => setFormData({ ...formData, company: e.target.value })}
+                      placeholder={t.companyPlaceholder}
+                      className="w-full pl-8 pr-3 py-2 rounded-xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/40 focus:outline-none focus:border-[var(--accent)] transition-all"
+                    />
                   </div>
                 </div>
+              </div>
 
-                {/* Rating Selector */}
-                <div className="p-4 rounded-2xl bg-[var(--icon-bg)]/60 border border-[var(--border)] space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[11px] font-bold uppercase tracking-wider opacity-85">
-                      {t.ratingLabel}
-                    </label>
-                    <span className="text-xs font-extrabold text-amber-500 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-                      {getRatingFeedback(currentDisplayRating)}
-                    </span>
-                  </div>
+              {/* Row 4: Star Rating (Single Compact Bar) */}
+              <div className="p-2.5 rounded-xl bg-[var(--icon-bg)]/60 border border-[var(--border)] flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((starIdx) => {
+                    const fullActive = currentDisplayRating >= starIdx;
+                    const halfActive = !fullActive && currentDisplayRating >= starIdx - 0.5;
 
-                  {/* Interactive Stars Row */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-                    <div className="flex items-center gap-1.5">
-                      {[1, 2, 3, 4, 5].map((starIdx) => {
-                        const fullActive = currentDisplayRating >= starIdx;
-                        const halfActive = !fullActive && currentDisplayRating >= starIdx - 0.5;
+                    return (
+                      <div 
+                        key={starIdx}
+                        className="relative cursor-pointer hover:scale-115 transition-transform p-0.5"
+                      >
+                        {fullActive ? (
+                          <Star size={24} className="fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]" />
+                        ) : halfActive ? (
+                          <StarHalf size={24} className="fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]" />
+                        ) : (
+                          <Star size={24} className="text-zinc-500/30" />
+                        )}
 
-                        return (
-                          <div 
-                            key={starIdx}
-                            className="relative cursor-pointer hover:scale-125 transition-transform p-1"
-                          >
-                            {fullActive ? (
-                              <Star size={30} className="fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
-                            ) : halfActive ? (
-                              <StarHalf size={30} className="fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
-                            ) : (
-                              <Star size={30} className="text-zinc-600/30" />
-                            )}
+                        {/* Left Half Hit Area for .5 */}
+                        <div
+                          className="absolute inset-y-0 left-0 w-1/2 z-10"
+                          onMouseEnter={() => setHoverRating(starIdx - 0.5)}
+                          onMouseLeave={() => setHoverRating(null)}
+                          onClick={() => setFormData({ ...formData, rating: starIdx - 0.5 })}
+                          title={`${starIdx - 0.5} Stars`}
+                        />
 
-                            {/* Left Half Hit Area for .5 */}
-                            <div
-                              className="absolute inset-y-0 left-0 w-1/2 z-10"
-                              onMouseEnter={() => setHoverRating(starIdx - 0.5)}
-                              onMouseLeave={() => setHoverRating(null)}
-                              onClick={() => setFormData({ ...formData, rating: starIdx - 0.5 })}
-                              title={`${starIdx - 0.5} Stars`}
-                            />
-
-                            {/* Right Half Hit Area for .0 */}
-                            <div
-                              className="absolute inset-y-0 right-0 w-1/2 z-10"
-                              onMouseEnter={() => setHoverRating(starIdx)}
-                              onMouseLeave={() => setHoverRating(null)}
-                              onClick={() => setFormData({ ...formData, rating: starIdx })}
-                              title={`${starIdx} Stars`}
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Quick Preset Buttons */}
-                    <div className="flex items-center gap-1.5">
-                      {[5.0, 4.5, 4.0, 3.5].map((val) => (
-                        <button
-                          type="button"
-                          key={val}
-                          onClick={() => setFormData({ ...formData, rating: val })}
-                          className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
-                            formData.rating === val
-                              ? 'bg-amber-400 text-black shadow-sm font-black'
-                              : 'bg-[var(--card)] text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)]'
-                          }`}
-                        >
-                          {val.toFixed(1)}★
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Review Message Textarea */}
-                <div>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-[11px] font-bold uppercase tracking-wider opacity-85">
-                      {t.messageLabel} <span className="text-rose-500">*</span>
-                    </label>
-                    <span className={`text-[10px] font-mono ${
-                      formData.message.trim().length >= 10 ? 'text-emerald-500' : 'text-[var(--text-muted)]'
-                    }`}>
-                      {formData.message.length}/500 (min. 10)
-                    </span>
-                  </div>
-                  <textarea
-                    required
-                    rows={4}
-                    maxLength={500}
-                    value={formData.message}
-                    onChange={e => setFormData({ ...formData, message: e.target.value })}
-                    placeholder={t.messagePlaceholder}
-                    className="w-full p-4 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 transition-all resize-none shadow-xs leading-relaxed"
-                  />
-                </div>
-
-                {/* Live Card Preview Toggle */}
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => setShowPreview(!showPreview)}
-                    className="flex items-center gap-2 text-[11px] font-bold text-[var(--accent)] hover:underline"
-                  >
-                    <Eye size={13} />
-                    <span>{showPreview ? (lang === 'en' ? 'Hide Live Preview' : 'Sembunyikan Pratinjau') : (lang === 'en' ? 'Preview Your Review Card' : 'Lihat Pratinjau Kartu Ulasan')}</span>
-                  </button>
-
-                  {showPreview && (
-                    <div className="mt-3 p-5 rounded-2xl bg-[var(--bg)] border border-[var(--border)] shadow-md animate-in fade-in slide-in-from-top-2">
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <div className="flex items-center gap-1">
-                          {renderStars(formData.rating, 14)}
-                          <span className="text-xs font-black text-amber-500 ml-1">
-                            {formData.rating.toFixed(1)}
-                          </span>
-                        </div>
-                        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--icon-bg)] text-[var(--text-muted)] border border-[var(--border)]">
-                          {formData.relation}
-                        </span>
+                        {/* Right Half Hit Area for .0 */}
+                        <div
+                          className="absolute inset-y-0 right-0 w-1/2 z-10"
+                          onMouseEnter={() => setHoverRating(starIdx)}
+                          onMouseLeave={() => setHoverRating(null)}
+                          onClick={() => setFormData({ ...formData, rating: starIdx })}
+                          title={`${starIdx} Stars`}
+                        />
                       </div>
-                      <p className="text-xs italic text-[var(--text)] opacity-90 mb-4 leading-relaxed">
-                        "{formData.message.trim() || (lang === 'en' ? 'Your feedback message will appear here...' : 'Pesan ulasan Anda akan tampil di sini...')}"
-                      </p>
-                      <div className="flex items-center gap-3 pt-3 border-t border-[var(--border)]">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[var(--accent)] to-amber-500 text-white flex items-center justify-center font-black text-xs shadow-sm">
-                          {getInitials(formData.name)}
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-[var(--text)]">
-                            {formData.name.trim() || (lang === 'en' ? 'Your Name' : 'Nama Anda')}
-                          </div>
-                          <div className="text-[9px] text-[var(--text-muted)]">
-                            {formData.role.trim() || 'Role'} {formData.company ? `• ${formData.company}` : ''}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                    );
+                  })}
                 </div>
-              </form>
-            </div>
 
-            {/* Modal Footer Action Buttons */}
-            <div className="flex items-center justify-between pt-4 border-t border-[var(--border)] shrink-0 gap-3">
-              <span className="text-[10px] text-[var(--text-muted)] flex items-center gap-1.5">
-                <HeartHandshake size={14} className="text-[var(--accent)]" />
-                {lang === 'en' ? 'Shared with all visitors' : 'Tersimpan untuk semua pengunjung'}
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 whitespace-nowrap">
+                    {getRatingFeedback(currentDisplayRating)}
+                  </span>
+                  
+                  {/* Preset Pills */}
+                  <div className="hidden sm:flex items-center gap-1 border-l border-[var(--border)] pl-2">
+                    {[5.0, 4.5, 4.0].map((val) => (
+                      <button
+                        type="button"
+                        key={val}
+                        onClick={() => setFormData({ ...formData, rating: val })}
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-bold transition-all ${
+                          formData.rating === val
+                            ? 'bg-amber-400 text-black'
+                            : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                        }`}
+                      >
+                        {val.toFixed(1)}★
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 5: Testimonial Message */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text)] opacity-90">
+                    {t.messageLabel} <span className="text-rose-500">*</span>
+                  </label>
+                  <span className={`text-[9px] font-mono ${
+                    formData.message.trim().length >= 10 ? 'text-emerald-500' : 'text-[var(--text-muted)]'
+                  }`}>
+                    {formData.message.length}/500 (min. 10)
+                  </span>
+                </div>
+                <textarea
+                  required
+                  rows={3}
+                  maxLength={500}
+                  value={formData.message}
+                  onChange={e => setFormData({ ...formData, message: e.target.value })}
+                  placeholder={t.messagePlaceholder}
+                  className="w-full p-3 rounded-xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all resize-none leading-relaxed"
+                />
+              </div>
+            </form>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-between pt-3 mt-3 border-t border-[var(--border)]">
+              <span className="text-[9px] text-[var(--text-muted)] flex items-center gap-1">
+                <HeartHandshake size={12} className="text-[var(--accent)]" />
+                {lang === 'en' ? 'Stored in Cloud' : 'Tersimpan ke Cloud'}
               </span>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
                 >
                   {lang === 'en' ? 'Cancel' : 'Batal'}
                 </button>
@@ -624,11 +564,11 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                   type="submit"
                   form="reviewForm"
                   disabled={isSubmitting || formData.name.trim().length < 2 || formData.message.trim().length < 10}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--accent)] text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-md shadow-[var(--accent)]/20 disabled:opacity-40 disabled:pointer-events-none"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[var(--accent)] text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-md shadow-[var(--accent)]/20 disabled:opacity-40 disabled:pointer-events-none"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 size={14} className="animate-spin" />
+                      <Loader2 size={13} className="animate-spin" />
                       <span>{t.submittingBtn}</span>
                     </>
                   ) : (
@@ -637,6 +577,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                 </button>
               </div>
             </div>
+
           </div>
         </div>
       )}
