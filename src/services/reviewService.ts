@@ -2,6 +2,7 @@ import {
   collection, 
   addDoc, 
   onSnapshot, 
+  getDocs,
   query, 
   orderBy, 
   serverTimestamp,
@@ -39,6 +40,42 @@ export const setCachedReviews = (reviews: Review[]): void => {
   } catch (err) {
     console.error('Error saving cached reviews:', err);
   }
+};
+
+/**
+ * Fetch reviews immediately from Firebase Firestore or local cache
+ */
+export const fetchReviews = async (): Promise<Review[]> => {
+  if (isFirebaseConfigured() && db) {
+    try {
+      const reviewsRef = collection(db, 'reviews');
+      const q = query(reviewsRef, orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const fetched: Review[] = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        fetched.push({
+          id: docSnap.id,
+          name: data.name || 'Anonymous',
+          role: data.role || 'Peer / Collaborator',
+          company: data.company || undefined,
+          relation: data.relation || 'Colleague',
+          rating: typeof data.rating === 'number' ? data.rating : 5.0,
+          message: data.message || '',
+          date: data.date || ''
+        });
+      });
+
+      if (fetched.length > 0) {
+        setCachedReviews(fetched);
+        return fetched;
+      }
+    } catch (err) {
+      console.warn('[Firebase Firestore] fetchReviews error, falling back to cache:', err);
+    }
+  }
+
+  return getCachedReviews();
 };
 
 /**

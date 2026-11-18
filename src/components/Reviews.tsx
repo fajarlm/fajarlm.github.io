@@ -11,11 +11,15 @@ import {
   Briefcase, 
   HeartHandshake, 
   AlertCircle, 
-  Loader2
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { translations } from '../data/portfolioData';
 import SpotlightCard from './ui/SpotlightCard';
-import { subscribeToReviews, submitReview } from '../services/reviewService';
+import { subscribeToReviews, submitReview, fetchReviews } from '../services/reviewService';
 import type { Language, Review } from '../types';
 
 interface ReviewsProps {
@@ -69,6 +73,10 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(3);
+
   const [formData, setFormData] = useState({
     name: '',
     role: '',
@@ -81,6 +89,25 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
   const [toastMessage, setToastMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Responsive card count calculation for carousel view
+  useEffect(() => {
+    const updateVisibleCount = () => {
+      if (typeof window !== 'undefined') {
+        if (window.innerWidth < 768) {
+          setVisibleCount(1);
+        } else if (window.innerWidth < 1024) {
+          setVisibleCount(2);
+        } else {
+          setVisibleCount(3);
+        }
+      }
+    };
+
+    updateVisibleCount();
+    window.addEventListener('resize', updateVisibleCount);
+    return () => window.removeEventListener('resize', updateVisibleCount);
+  }, []);
 
   // Subscribe to realtime reviews
   useEffect(() => {
@@ -102,6 +129,19 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
   const satisfactionPercentage = reviews.length > 0
     ? Math.round((reviews.filter(r => r.rating >= 4.0).length / reviews.length) * 100)
     : 100;
+
+  // Infinite Carousel Navigation: seamless wrap-around with no end
+  const handlePrev = () => {
+    if (reviews.length <= 1) return;
+    setDirection(-1);
+    setCarouselIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+  };
+
+  const handleNext = () => {
+    if (reviews.length <= 1) return;
+    setDirection(1);
+    setCarouselIndex((prev) => (prev + 1) % reviews.length);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,6 +177,16 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
         message: formData.message.trim(),
         date: dateStr
       });
+
+      // GET ULANG DATA REVIEWS SECARA INSTAN SETELAH SUBMIT
+      const refreshedReviews = await fetchReviews();
+      if (refreshedReviews && refreshedReviews.length > 0) {
+        setReviews(refreshedReviews);
+      }
+
+      // Reset carousel index to 0 so the user immediately sees the newly submitted review
+      setCarouselIndex(0);
+      setDirection(0);
 
       setIsSubmitting(false);
       setIsModalOpen(false);
@@ -182,6 +232,25 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
     return lang === 'en' ? '3.0 ★ Fair' : '3.0 ★ Cukup';
   };
 
+  // Build visible circular array of cards for infinite carousel when reviews > 3
+  const isCarousel = reviews.length > 3;
+  const cardsToShowCount = isCarousel ? Math.min(visibleCount, reviews.length) : reviews.length;
+
+  const visibleCards: { review: Review; index: number }[] = [];
+  if (reviews.length > 0) {
+    if (!isCarousel) {
+      reviews.forEach((r, idx) => visibleCards.push({ review: r, index: idx }));
+    } else {
+      for (let i = 0; i < cardsToShowCount; i++) {
+        const targetIdx = (carouselIndex + i) % reviews.length;
+        visibleCards.push({
+          review: reviews[targetIdx],
+          index: targetIdx
+        });
+      }
+    }
+  }
+
   return (
     <section id="reviews" className="py-24 relative overflow-hidden">
       {/* Toast Notification */}
@@ -209,7 +278,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
             </p>
           </div>
 
-          {/* Action button & Stats Banner */}
+          {/* Action button & Stats Banner & Carousel Nav Controls */}
           <div className="flex flex-wrap items-center gap-4">
             {reviews.length > 0 && (
               <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] shadow-xs">
@@ -222,6 +291,33 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                   <div className="text-[var(--text)] font-bold">{reviews.length} {t.totalReviews}</div>
                   <div className="text-emerald-500 font-bold">{satisfactionPercentage}% {lang === 'en' ? 'Satisfaction' : 'Puas'}</div>
                 </div>
+              </div>
+            )}
+
+            {/* Carousel Navigation Buttons (Visible when > 3 reviews) */}
+            {isCarousel && (
+              <div className="flex items-center gap-2 bg-[var(--icon-bg)] p-1 rounded-2xl border border-[var(--border)] shadow-xs">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className="p-2.5 rounded-xl text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all hover:scale-105 active:scale-95"
+                  aria-label="Previous Reviews"
+                  title={lang === 'en' ? 'Previous' : 'Sebelumnya'}
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <span className="text-[11px] font-mono font-bold px-2 text-[var(--text-muted)] select-none">
+                  {carouselIndex + 1} / {reviews.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="p-2.5 rounded-xl text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all hover:scale-105 active:scale-95"
+                  aria-label="Next Reviews"
+                  title={lang === 'en' ? 'Next' : 'Berikutnya'}
+                >
+                  <ChevronRight size={18} />
+                </button>
               </div>
             )}
 
@@ -265,84 +361,131 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
             </button>
           </div>
         ) : (
-          /* Reviews Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reviews.map((r, idx) => (
-              <SpotlightCard
-                key={r.id || idx}
-                className="group card-minimal rounded-[2rem] p-6 sm:p-7 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between relative overflow-hidden border border-[var(--border)]"
-                spotlightColor="rgba(245, 158, 11, 0.08)"
-                data-aos="fade-up"
-                data-aos-delay={idx * 80}
-              >
-                <Quote className="absolute right-6 top-6 text-[var(--border)] opacity-35 group-hover:text-[var(--accent)] group-hover:opacity-20 transition-all duration-500 pointer-events-none" size={48} />
-                
-                <div>
-                  {/* Rating Stars & Relation Tag */}
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="flex items-center gap-1">
-                      {renderStars(r.rating, 15)}
-                      <span className="text-xs font-black text-amber-500 ml-1.5">
-                        {r.rating.toFixed(1)}
-                      </span>
+          /* Reviews Display Area: Infinite Circular Carousel (when > 3) or Standard Grid */
+          <div className="relative">
+            <motion.div
+              key={isCarousel ? carouselIndex : 'static-grid'}
+              initial={isCarousel ? { opacity: 0.85, x: direction * 35 } : false}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              drag={isCarousel ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.15}
+              onDragEnd={(_e, info) => {
+                if (!isCarousel) return;
+                if (info.offset.x < -40) {
+                  handleNext();
+                } else if (info.offset.x > 40) {
+                  handlePrev();
+                }
+              }}
+              className={`grid gap-6 ${
+                isCarousel
+                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 cursor-grab active:cursor-grabbing'
+                  : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+              }`}
+            >
+              {visibleCards.map(({ review: r }, i) => (
+                <SpotlightCard
+                  key={`${r.id}-${carouselIndex}-${i}`}
+                  className="group card-minimal rounded-[2rem] p-6 sm:p-7 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between relative overflow-hidden border border-[var(--border)] min-h-[220px]"
+                  spotlightColor="rgba(245, 158, 11, 0.08)"
+                >
+                  <Quote className="absolute right-6 top-6 text-[var(--border)] opacity-35 group-hover:text-[var(--accent)] group-hover:opacity-20 transition-all duration-500 pointer-events-none" size={48} />
+                  
+                  <div>
+                    {/* Rating Stars & Relation Tag */}
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <div className="flex items-center gap-1">
+                        {renderStars(r.rating, 15)}
+                        <span className="text-xs font-black text-amber-500 ml-1.5">
+                          {r.rating.toFixed(1)}
+                        </span>
+                      </div>
+
+                      {r.relation && (
+                        <span className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[var(--icon-bg)] text-[var(--text-muted)] border border-[var(--border)]">
+                          {r.relation}
+                        </span>
+                      )}
                     </div>
 
-                    {r.relation && (
-                      <span className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[var(--icon-bg)] text-[var(--text-muted)] border border-[var(--border)]">
-                        {r.relation}
-                      </span>
-                    )}
+                    {/* Message */}
+                    <p className="text-xs md:text-sm text-[var(--text)] leading-relaxed italic opacity-90 mb-6">
+                      "{r.message}"
+                    </p>
                   </div>
 
-                  {/* Message */}
-                  <p className="text-xs md:text-sm text-[var(--text)] leading-relaxed italic opacity-90 mb-6">
-                    "{r.message}"
-                  </p>
-                </div>
+                  {/* Author footer */}
+                  <div className="pt-4 border-t border-[var(--border)] flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[var(--accent)] to-amber-500 text-white flex items-center justify-center font-black text-xs shadow-md shrink-0">
+                        {getInitials(r.name)}
+                      </div>
+                      <div>
+                        <h4 className="text-xs md:text-sm font-bold tracking-tight text-[var(--text)] line-clamp-1">
+                          {r.name}
+                        </h4>
+                        <p className="text-[10px] text-[var(--text-muted)] line-clamp-1">
+                          {r.role} {r.company ? `• ${r.company}` : ''}
+                        </p>
+                      </div>
+                    </div>
 
-                {/* Author footer */}
-                <div className="pt-4 border-t border-[var(--border)] flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[var(--accent)] to-amber-500 text-white flex items-center justify-center font-black text-xs shadow-md shrink-0">
-                      {getInitials(r.name)}
-                    </div>
-                    <div>
-                      <h4 className="text-xs md:text-sm font-bold tracking-tight text-[var(--text)] line-clamp-1">
-                        {r.name}
-                      </h4>
-                      <p className="text-[10px] text-[var(--text-muted)] line-clamp-1">
-                        {r.role} {r.company ? `• ${r.company}` : ''}
-                      </p>
-                    </div>
+                    <span className="text-[9px] text-[var(--text-muted)] opacity-60 shrink-0 font-medium">
+                      {r.date}
+                    </span>
                   </div>
+                </SpotlightCard>
+              ))}
+            </motion.div>
 
-                  <span className="text-[9px] text-[var(--text-muted)] opacity-60 shrink-0 font-medium">
-                    {r.date}
-                  </span>
-                </div>
-              </SpotlightCard>
-            ))}
+            {/* Infinite Carousel Pagination Dots Indicator */}
+            {isCarousel && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                {reviews.map((r, idx) => (
+                  <button
+                    key={r.id || idx}
+                    type="button"
+                    onClick={() => {
+                      setDirection(idx > carouselIndex ? 1 : -1);
+                      setCarouselIndex(idx);
+                    }}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      idx === carouselIndex
+                        ? 'w-8 bg-[var(--accent)]'
+                        : 'w-2 bg-[var(--border)] hover:bg-[var(--text-muted)]'
+                    }`}
+                    title={r.name}
+                    aria-label={`Jump to review ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* COMPACT & POLISHED REVIEW MODAL (ZERO INNER SCROLL, INTUITIVE UX) */}
+      {/* SPACIOUS & ELEGANT REVIEW MODAL (Wider, Roomy, Premium UX) */}
       {isModalOpen && (
         <div 
-          className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200"
+          className="fixed inset-0 z-[250] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/75 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
           onClick={() => setIsModalOpen(false)}
         >
           <div 
-            className="w-full max-w-lg rounded-3xl p-5 sm:p-6 shadow-2xl border border-[var(--border)] relative bg-[var(--card)] text-[var(--text)] overflow-hidden animate-in zoom-in-95 duration-200"
+            className="w-full max-w-2xl lg:max-w-3xl my-auto rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl border border-[var(--border)] relative bg-[var(--card)] text-[var(--text)] overflow-hidden animate-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col"
             onClick={e => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[var(--border)]">
+            <div className="flex items-start justify-between pb-5 mb-5 border-b border-[var(--border)] shrink-0">
               <div>
-                <h3 className="text-lg sm:text-xl font-black tracking-tight text-[var(--text)]">
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[var(--icon-bg)] text-[10px] font-bold uppercase tracking-wider text-[var(--accent)] border border-[var(--border)] mb-2 shadow-xs">
+                  <Sparkles size={12} /> {t.badge}
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text)]">
                   {t.modalTitle}
                 </h3>
-                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">
                   {t.modalDesc}
                 </p>
               </div>
@@ -350,35 +493,35 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-full bg-[var(--icon-bg)] text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all shrink-0 hover:rotate-90"
+                className="p-3 rounded-full bg-[var(--icon-bg)] text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all shrink-0 hover:rotate-90 shadow-xs"
                 aria-label="Close"
               >
-                <X size={16} />
+                <X size={18} />
               </button>
             </div>
 
             {/* Error Banner */}
             {errorMessage && (
-              <div className="flex items-center gap-2 p-2.5 mb-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs animate-in fade-in">
-                <AlertCircle size={14} className="shrink-0" />
-                <span className="font-medium text-[11px]">{errorMessage}</span>
+              <div className="flex items-center gap-2.5 p-3.5 mb-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs animate-in fade-in">
+                <AlertCircle size={16} className="shrink-0" />
+                <span className="font-medium text-xs">{errorMessage}</span>
               </div>
             )}
 
-            {/* Form with Clean, Compact Spacing (No Scroll Needed) */}
-            <form id="reviewForm" onSubmit={handleSubmit} className="space-y-3">
+            {/* Form with Spacious, Roomy Spacing */}
+            <form id="reviewForm" onSubmit={handleSubmit} className="flex-1 overflow-y-auto pr-1 space-y-5 [scrollbar-width:thin] [scrollbar-color:var(--accent)_transparent]">
               {/* Row 1: Full Name */}
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text)] opacity-90">
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[var(--text)] opacity-90">
                     {t.nameLabel} <span className="text-rose-500">*</span>
                   </label>
-                  <span className="text-[9px] text-[var(--text-muted)] font-mono">
+                  <span className="text-[10px] text-[var(--text-muted)] font-mono">
                     {formData.name.length}/60
                   </span>
                 </div>
                 <div className="relative flex items-center">
-                  <User size={14} className="absolute left-3 text-[var(--text-muted)] pointer-events-none" />
+                  <User size={16} className="absolute left-4 text-[var(--text-muted)] pointer-events-none" />
                   <input
                     type="text"
                     required
@@ -386,17 +529,17 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                     placeholder={t.namePlaceholder}
-                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all"
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] text-sm text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all shadow-xs"
                   />
                 </div>
               </div>
 
-              {/* Row 2: Relationship Selector (Clear Pills) */}
+              {/* Row 2: Relationship Selector (Clear, Roomy Pills) */}
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider mb-1 text-[var(--text)] opacity-90">
+                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-[var(--text)] opacity-90">
                   {t.relationLabel || (lang === 'en' ? 'Relationship' : 'Hubungan Kolaborasi')}
                 </label>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-2">
                   {RELATION_OPTIONS.map((opt) => {
                     const isSelected = formData.relation === opt.value;
                     return (
@@ -404,10 +547,10 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                         type="button"
                         key={opt.value}
                         onClick={() => setFormData({ ...formData, relation: opt.value })}
-                        className={`px-3 py-1 rounded-lg text-[10px] font-semibold transition-all border ${
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
                           isSelected
-                            ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-xs font-bold'
-                            : 'bg-[var(--icon-bg)] text-[var(--text-muted)] hover:text-[var(--text)] border-[var(--border)] hover:border-[var(--text)]/40'
+                            ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-md shadow-[var(--accent)]/20 scale-[1.02]'
+                            : 'bg-[var(--icon-bg)] text-[var(--text-muted)] hover:text-[var(--text)] border-[var(--border)] hover:border-[var(--text)]/40 hover:bg-[var(--card)]'
                         }`}
                       >
                         {opt.label[lang]}
@@ -417,101 +560,106 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                 </div>
               </div>
 
-              {/* Row 3: Role (Job Title) & Company / School (Optional) */}
-              <div className="grid grid-cols-2 gap-2.5">
+              {/* Row 3: Role (Job Title) & Company / School (2 Columns) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1 text-[var(--text-muted)]">
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 text-[var(--text-muted)]">
                     {t.roleLabel}
                   </label>
                   <div className="relative flex items-center">
-                    <Briefcase size={13} className="absolute left-3 text-[var(--text-muted)] pointer-events-none" />
+                    <Briefcase size={15} className="absolute left-4 text-[var(--text-muted)] pointer-events-none" />
                     <input
                       type="text"
                       maxLength={50}
                       value={formData.role}
                       onChange={e => setFormData({ ...formData, role: e.target.value })}
                       placeholder={t.rolePlaceholder}
-                      className="w-full pl-8 pr-3 py-2 rounded-xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/40 focus:outline-none focus:border-[var(--accent)] transition-all"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] text-sm text-[var(--text)] placeholder-[var(--text-muted)]/40 focus:outline-none focus:border-[var(--accent)] transition-all shadow-xs"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1 text-[var(--text-muted)]">
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 text-[var(--text-muted)]">
                     {t.companyLabel}
                   </label>
                   <div className="relative flex items-center">
-                    <Building size={13} className="absolute left-3 text-[var(--text-muted)] pointer-events-none" />
+                    <Building size={15} className="absolute left-4 text-[var(--text-muted)] pointer-events-none" />
                     <input
                       type="text"
                       maxLength={50}
                       value={formData.company}
                       onChange={e => setFormData({ ...formData, company: e.target.value })}
                       placeholder={t.companyPlaceholder}
-                      className="w-full pl-8 pr-3 py-2 rounded-xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/40 focus:outline-none focus:border-[var(--accent)] transition-all"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] text-sm text-[var(--text)] placeholder-[var(--text-muted)]/40 focus:outline-none focus:border-[var(--accent)] transition-all shadow-xs"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Row 4: Star Rating (Single Compact Bar) */}
-              <div className="p-2.5 rounded-xl bg-[var(--icon-bg)]/60 border border-[var(--border)] flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((starIdx) => {
-                    const fullActive = currentDisplayRating >= starIdx;
-                    const halfActive = !fullActive && currentDisplayRating >= starIdx - 0.5;
+              {/* Row 4: Star Rating (Spacious Bar with Feedback & Presets) */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[var(--icon-bg)]/60 border border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wider opacity-85 mb-1.5">
+                    {t.ratingLabel}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {[1, 2, 3, 4, 5].map((starIdx) => {
+                      const fullActive = currentDisplayRating >= starIdx;
+                      const halfActive = !fullActive && currentDisplayRating >= starIdx - 0.5;
 
-                    return (
-                      <div 
-                        key={starIdx}
-                        className="relative cursor-pointer hover:scale-115 transition-transform p-0.5"
-                      >
-                        {fullActive ? (
-                          <Star size={24} className="fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]" />
-                        ) : halfActive ? (
-                          <StarHalf size={24} className="fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]" />
-                        ) : (
-                          <Star size={24} className="text-zinc-500/30" />
-                        )}
+                      return (
+                        <div 
+                          key={starIdx}
+                          className="relative cursor-pointer hover:scale-120 transition-transform p-1"
+                        >
+                          {fullActive ? (
+                            <Star size={30} className="fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
+                          ) : halfActive ? (
+                            <StarHalf size={30} className="fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
+                          ) : (
+                            <Star size={30} className="text-zinc-500/30" />
+                          )}
 
-                        {/* Left Half Hit Area for .5 */}
-                        <div
-                          className="absolute inset-y-0 left-0 w-1/2 z-10"
-                          onMouseEnter={() => setHoverRating(starIdx - 0.5)}
-                          onMouseLeave={() => setHoverRating(null)}
-                          onClick={() => setFormData({ ...formData, rating: starIdx - 0.5 })}
-                          title={`${starIdx - 0.5} Stars`}
-                        />
+                          {/* Left Half Hit Area for .5 */}
+                          <div
+                            className="absolute inset-y-0 left-0 w-1/2 z-10"
+                            onMouseEnter={() => setHoverRating(starIdx - 0.5)}
+                            onMouseLeave={() => setHoverRating(null)}
+                            onClick={() => setFormData({ ...formData, rating: starIdx - 0.5 })}
+                            title={`${starIdx - 0.5} Stars`}
+                          />
 
-                        {/* Right Half Hit Area for .0 */}
-                        <div
-                          className="absolute inset-y-0 right-0 w-1/2 z-10"
-                          onMouseEnter={() => setHoverRating(starIdx)}
-                          onMouseLeave={() => setHoverRating(null)}
-                          onClick={() => setFormData({ ...formData, rating: starIdx })}
-                          title={`${starIdx} Stars`}
-                        />
-                      </div>
-                    );
-                  })}
+                          {/* Right Half Hit Area for .0 */}
+                          <div
+                            className="absolute inset-y-0 right-0 w-1/2 z-10"
+                            onMouseEnter={() => setHoverRating(starIdx)}
+                            onMouseLeave={() => setHoverRating(null)}
+                            onClick={() => setFormData({ ...formData, rating: starIdx })}
+                            title={`${starIdx} Stars`}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 whitespace-nowrap">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-extrabold text-amber-500 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20 whitespace-nowrap">
                     {getRatingFeedback(currentDisplayRating)}
                   </span>
                   
                   {/* Preset Pills */}
-                  <div className="hidden sm:flex items-center gap-1 border-l border-[var(--border)] pl-2">
-                    {[5.0, 4.5, 4.0].map((val) => (
+                  <div className="flex items-center gap-1.5 border-l border-[var(--border)] pl-3">
+                    {[5.0, 4.5, 4.0, 3.5].map((val) => (
                       <button
                         type="button"
                         key={val}
                         onClick={() => setFormData({ ...formData, rating: val })}
-                        className={`px-1.5 py-0.5 rounded text-[9px] font-bold transition-all ${
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
                           formData.rating === val
-                            ? 'bg-amber-400 text-black'
-                            : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                            ? 'bg-amber-400 text-black shadow-xs font-black'
+                            : 'bg-[var(--card)] text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)]'
                         }`}
                       >
                         {val.toFixed(1)}★
@@ -521,13 +669,13 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                 </div>
               </div>
 
-              {/* Row 5: Testimonial Message */}
+              {/* Row 5: Testimonial Message Textarea */}
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text)] opacity-90">
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[var(--text)] opacity-90">
                     {t.messageLabel} <span className="text-rose-500">*</span>
                   </label>
-                  <span className={`text-[9px] font-mono ${
+                  <span className={`text-[11px] font-mono ${
                     formData.message.trim().length >= 10 ? 'text-emerald-500' : 'text-[var(--text-muted)]'
                   }`}>
                     {formData.message.length}/500 (min. 10)
@@ -535,28 +683,28 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                 </div>
                 <textarea
                   required
-                  rows={3}
+                  rows={4}
                   maxLength={500}
                   value={formData.message}
                   onChange={e => setFormData({ ...formData, message: e.target.value })}
                   placeholder={t.messagePlaceholder}
-                  className="w-full p-3 rounded-xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all resize-none leading-relaxed"
+                  className="w-full p-4 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] text-sm text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all resize-none leading-relaxed shadow-xs"
                 />
               </div>
             </form>
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-between pt-3 mt-3 border-t border-[var(--border)]">
-              <span className="text-[9px] text-[var(--text-muted)] flex items-center gap-1">
-                <HeartHandshake size={12} className="text-[var(--accent)]" />
-                {lang === 'en' ? 'Stored in Cloud' : 'Tersimpan ke Cloud'}
+            <div className="flex items-center justify-between pt-5 mt-4 border-t border-[var(--border)] shrink-0">
+              <span className="text-xs text-[var(--text-muted)] flex items-center gap-1.5">
+                <HeartHandshake size={15} className="text-[var(--accent)]" />
+                {lang === 'en' ? 'Stored in Cloud for all visitors' : 'Tersimpan otomatis untuk semua pengunjung'}
               </span>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+                  className="px-5 py-3 rounded-2xl text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
                 >
                   {lang === 'en' ? 'Cancel' : 'Batal'}
                 </button>
@@ -564,11 +712,11 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                   type="submit"
                   form="reviewForm"
                   disabled={isSubmitting || formData.name.trim().length < 2 || formData.message.trim().length < 10}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[var(--accent)] text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-md shadow-[var(--accent)]/20 disabled:opacity-40 disabled:pointer-events-none"
+                  className="inline-flex items-center gap-2 px-7 py-3 rounded-2xl bg-[var(--accent)] text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-[var(--accent)]/25 disabled:opacity-40 disabled:pointer-events-none"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 size={13} className="animate-spin" />
+                      <Loader2 size={15} className="animate-spin" />
                       <span>{t.submittingBtn}</span>
                     </>
                   ) : (
