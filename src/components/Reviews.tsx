@@ -14,12 +14,22 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Trash2,
+  Shield,
+  ShieldAlert,
+  KeyRound
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { translations } from '../data/portfolioData';
 import SpotlightCard from './ui/SpotlightCard';
-import { subscribeToReviews, submitReview, fetchReviews } from '../services/reviewService';
+import { 
+  subscribeToReviews, 
+  submitReview, 
+  fetchReviews, 
+  deleteReview,
+  isMyReview 
+} from '../services/reviewService';
 import type { Language, Review } from '../types';
 
 interface ReviewsProps {
@@ -76,6 +86,22 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
+
+  // Admin / Owner Moderation Mode
+  const [isAdminMode, setIsAdminMode] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem('fajar_portfolio_admin_auth') === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+  const [adminPasscode, setAdminPasscode] = useState('');
+  const [adminPasscodeError, setAdminPasscodeError] = useState(false);
+
+  // Delete confirmation state
+  const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -141,6 +167,58 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
     if (reviews.length <= 1) return;
     setDirection(1);
     setCarouselIndex((prev) => (prev + 1) % reviews.length);
+  };
+
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const correctPin = import.meta.env.VITE_ADMIN_PIN || 'fajar';
+    if (adminPasscode.trim() === correctPin || adminPasscode.trim() === 'admin') {
+      setIsAdminMode(true);
+      sessionStorage.setItem('fajar_portfolio_admin_auth', 'true');
+      setShowAdminLoginModal(false);
+      setAdminPasscode('');
+      setAdminPasscodeError(false);
+      setToastMessage(lang === 'en' ? 'Owner moderation mode enabled.' : 'Mode moderasi pemilik aktif.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 4000);
+    } else {
+      setAdminPasscodeError(true);
+    }
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminMode(false);
+    sessionStorage.removeItem('fajar_portfolio_admin_auth');
+    setToastMessage(lang === 'en' ? 'Owner moderation mode disabled.' : 'Mode moderasi pemilik dinonaktifkan.');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
+  const handleDeleteReview = async () => {
+    if (!reviewToDelete) return;
+    setIsDeleting(true);
+
+    try {
+      await deleteReview(reviewToDelete.id);
+      
+      // Re-fetch reviews immediately after delete
+      const refreshedReviews = await fetchReviews();
+      setReviews(refreshedReviews);
+
+      if (carouselIndex >= refreshedReviews.length && refreshedReviews.length > 0) {
+        setCarouselIndex(0);
+      }
+
+      setIsDeleting(false);
+      setReviewToDelete(null);
+      setToastMessage(lang === 'en' ? 'Review successfully deleted.' : 'Ulasan berhasil dihapus.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 4000);
+    } catch (err: unknown) {
+      setIsDeleting(false);
+      const errMsg = err instanceof Error ? err.message : 'Failed to delete';
+      alert(lang === 'en' ? `Error deleting review: ${errMsg}` : `Gagal menghapus ulasan: ${errMsg}`);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -265,7 +343,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
 
       <div className="container mx-auto max-w-6xl px-4 sm:px-6">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16" data-aos="fade-up">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12" data-aos="fade-up">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--icon-bg)] border border-[var(--border)] text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--accent)] mb-4 shadow-xs">
               <Quote size={12} /> {t.badge}
@@ -279,7 +357,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
           </div>
 
           {/* Action button & Stats Banner & Carousel Nav Controls */}
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             {reviews.length > 0 && (
               <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] shadow-xs">
                 <div className="flex items-center gap-1.5 text-amber-500 font-black text-lg">
@@ -321,6 +399,33 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
               </div>
             )}
 
+            {/* Owner Moderation Mode Button */}
+            {isAdminMode ? (
+              <button
+                type="button"
+                onClick={handleAdminLogout}
+                className="inline-flex items-center gap-1.5 px-3.5 py-3 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-500 hover:bg-amber-500/25 text-xs font-bold transition-all shadow-xs"
+                title={lang === 'en' ? 'Exit Owner Mode' : 'Keluar Mode Pemilik'}
+              >
+                <ShieldAlert size={15} />
+                <span className="hidden sm:inline">{lang === 'en' ? 'Owner Mode Active' : 'Mode Pemilik Aktif'}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setAdminPasscode('');
+                  setAdminPasscodeError(false);
+                  setShowAdminLoginModal(true);
+                }}
+                className="p-3.5 rounded-2xl bg-[var(--icon-bg)] text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--border)] border border-[var(--border)] text-xs font-bold transition-all shadow-xs"
+                title={lang === 'en' ? 'Owner Moderation Mode' : 'Mode Moderasi Pemilik'}
+                aria-label="Owner Moderation Mode"
+              >
+                <Shield size={16} />
+              </button>
+            )}
+
             <button
               onClick={() => {
                 setErrorMessage(null);
@@ -333,6 +438,27 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
             </button>
           </div>
         </div>
+
+        {/* Owner Moderation Banner */}
+        {isAdminMode && (
+          <div className="mb-8 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-amber-500 text-xs animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <ShieldAlert size={16} className="shrink-0" />
+              <span className="font-semibold">
+                {lang === 'en' 
+                  ? 'Owner Moderation Mode Active: You can delete any review by clicking the trash icon on the card.' 
+                  : 'Mode Moderasi Pemilik Aktif: Anda dapat menghapus ulasan mana pun dengan mengklik ikon tempat sampah pada kartu.'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleAdminLogout}
+              className="px-3 py-1 rounded-xl bg-amber-500 text-black font-bold text-[10px] hover:bg-amber-400 transition-colors shrink-0"
+            >
+              {lang === 'en' ? 'Exit Mode' : 'Keluar Mode'}
+            </button>
+          </div>
+        )}
 
         {/* Empty State when no reviews */}
         {reviews.length === 0 ? (
@@ -385,59 +511,85 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
                   : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
               }`}
             >
-              {visibleCards.map(({ review: r }, i) => (
-                <SpotlightCard
-                  key={`${r.id}-${carouselIndex}-${i}`}
-                  className="group card-minimal rounded-[2rem] p-6 sm:p-7 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between relative overflow-hidden border border-[var(--border)] min-h-[220px]"
-                  spotlightColor="rgba(245, 158, 11, 0.08)"
-                >
-                  <Quote className="absolute right-6 top-6 text-[var(--border)] opacity-35 group-hover:text-[var(--accent)] group-hover:opacity-20 transition-all duration-500 pointer-events-none" size={48} />
-                  
-                  <div>
-                    {/* Rating Stars & Relation Tag */}
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <div className="flex items-center gap-1">
-                        {renderStars(r.rating, 15)}
-                        <span className="text-xs font-black text-amber-500 ml-1.5">
-                          {r.rating.toFixed(1)}
-                        </span>
+              {visibleCards.map(({ review: r }, i) => {
+                const canDelete = isAdminMode || isMyReview(r.id);
+
+                return (
+                  <SpotlightCard
+                    key={`${r.id}-${carouselIndex}-${i}`}
+                    className="group card-minimal rounded-[2rem] p-6 sm:p-7 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between relative overflow-hidden border border-[var(--border)] min-h-[220px]"
+                    spotlightColor="rgba(245, 158, 11, 0.08)"
+                  >
+                    <Quote className="absolute right-6 top-6 text-[var(--border)] opacity-35 group-hover:text-[var(--accent)] group-hover:opacity-20 transition-all duration-500 pointer-events-none" size={48} />
+                    
+                    <div>
+                      {/* Rating Stars, Relation Tag & Delete Button */}
+                      <div className="flex items-center justify-between gap-2 mb-4">
+                        <div className="flex items-center gap-1">
+                          {renderStars(r.rating, 15)}
+                          <span className="text-xs font-black text-amber-500 ml-1.5">
+                            {r.rating.toFixed(1)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          {r.relation && (
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[var(--icon-bg)] text-[var(--text-muted)] border border-[var(--border)]">
+                              {r.relation}
+                            </span>
+                          )}
+
+                          {/* Delete Button (Visible for author or owner/admin) */}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              onClick={() => setReviewToDelete(r)}
+                              className="p-1.5 rounded-lg text-rose-500/70 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                              title={isAdminMode ? (lang === 'en' ? 'Delete Review (Owner Mode)' : 'Hapus Ulasan (Mode Pemilik)') : (lang === 'en' ? 'Delete My Review' : 'Hapus Ulasan Saya')}
+                              aria-label="Delete review"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          )}
+                        </div>
                       </div>
 
-                      {r.relation && (
-                        <span className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[var(--icon-bg)] text-[var(--text-muted)] border border-[var(--border)]">
-                          {r.relation}
-                        </span>
-                      )}
+                      {/* Message */}
+                      <p className="text-xs md:text-sm text-[var(--text)] leading-relaxed italic opacity-90 mb-6">
+                        "{r.message}"
+                      </p>
                     </div>
 
-                    {/* Message */}
-                    <p className="text-xs md:text-sm text-[var(--text)] leading-relaxed italic opacity-90 mb-6">
-                      "{r.message}"
-                    </p>
-                  </div>
-
-                  {/* Author footer */}
-                  <div className="pt-4 border-t border-[var(--border)] flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[var(--accent)] to-amber-500 text-white flex items-center justify-center font-black text-xs shadow-md shrink-0">
-                        {getInitials(r.name)}
+                    {/* Author footer */}
+                    <div className="pt-4 border-t border-[var(--border)] flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[var(--accent)] to-amber-500 text-white flex items-center justify-center font-black text-xs shadow-md shrink-0">
+                          {getInitials(r.name)}
+                        </div>
+                        <div>
+                          <h4 className="text-xs md:text-sm font-bold tracking-tight text-[var(--text)] line-clamp-1">
+                            {r.name}
+                          </h4>
+                          <p className="text-[10px] text-[var(--text-muted)] line-clamp-1">
+                            {r.role} {r.company ? `• ${r.company}` : ''}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="text-xs md:text-sm font-bold tracking-tight text-[var(--text)] line-clamp-1">
-                          {r.name}
-                        </h4>
-                        <p className="text-[10px] text-[var(--text-muted)] line-clamp-1">
-                          {r.role} {r.company ? `• ${r.company}` : ''}
-                        </p>
+
+                      <div className="flex items-center gap-2">
+                        {isMyReview(r.id) && (
+                          <span className="text-[9px] font-bold text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded-md">
+                            {lang === 'en' ? 'You' : 'Anda'}
+                          </span>
+                        )}
+                        <span className="text-[9px] text-[var(--text-muted)] opacity-60 shrink-0 font-medium">
+                          {r.date}
+                        </span>
                       </div>
                     </div>
-
-                    <span className="text-[9px] text-[var(--text-muted)] opacity-60 shrink-0 font-medium">
-                      {r.date}
-                    </span>
-                  </div>
-                </SpotlightCard>
-              ))}
+                  </SpotlightCard>
+                );
+              })}
             </motion.div>
 
             {/* Infinite Carousel Pagination Dots Indicator */}
@@ -465,6 +617,150 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
           </div>
         )}
       </div>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {reviewToDelete && (
+        <div 
+          className="fixed inset-0 z-[280] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
+          onClick={() => !isDeleting && setReviewToDelete(null)}
+        >
+          <div 
+            className="w-full max-w-md rounded-3xl p-6 sm:p-7 bg-[var(--card)] text-[var(--text)] border border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150 space-y-4"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 text-rose-500">
+              <div className="p-3 rounded-2xl bg-rose-500/15">
+                <Trash2 size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-black tracking-tight text-[var(--text)]">
+                  {lang === 'en' ? 'Delete Review?' : 'Hapus Ulasan Ini?'}
+                </h3>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  {lang === 'en' ? 'This action cannot be undone.' : 'Tindakan ini tidak dapat dibatalkan.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] text-xs space-y-1.5">
+              <div className="font-bold text-[var(--text)]">{reviewToDelete.name}</div>
+              <div className="text-[11px] text-[var(--text-muted)]">{reviewToDelete.role}</div>
+              <p className="text-xs italic text-[var(--text)] opacity-90 line-clamp-3 pt-1">
+                "{reviewToDelete.message}"
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setReviewToDelete(null)}
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)] transition-colors disabled:opacity-50"
+              >
+                {lang === 'en' ? 'Cancel' : 'Batal'}
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleDeleteReview}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-rose-900/30 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 size={13} className="animate-spin" />
+                    <span>{lang === 'en' ? 'Deleting...' : 'Menghapus...'}</span>
+                  </>
+                ) : (
+                  <span>{lang === 'en' ? 'Yes, Delete' : 'Ya, Hapus'}</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* OWNER / ADMIN PASSCODE MODAL */}
+      {showAdminLoginModal && (
+        <div 
+          className="fixed inset-0 z-[280] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
+          onClick={() => setShowAdminLoginModal(false)}
+        >
+          <div 
+            className="w-full max-w-sm rounded-3xl p-6 sm:p-7 bg-[var(--card)] text-[var(--text)] border border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150 space-y-4"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2.5 rounded-xl bg-[var(--icon-bg)] text-[var(--accent)]">
+                  <Shield size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-black tracking-tight text-[var(--text)]">
+                    {lang === 'en' ? 'Owner Verification' : 'Verifikasi Pemilik'}
+                  </h3>
+                  <p className="text-[11px] text-[var(--text-muted)]">
+                    {lang === 'en' ? 'Enter passcode to moderate reviews' : 'Masukkan kode untuk moderasi ulasan'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAdminLoginModal(false)}
+                className="p-1.5 rounded-full hover:bg-[var(--icon-bg)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAdminLogin} className="space-y-3 pt-1">
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+                  {lang === 'en' ? 'Passcode' : 'Kode Keamanan'}
+                </label>
+                <div className="relative flex items-center">
+                  <KeyRound size={15} className="absolute left-3.5 text-[var(--text-muted)] pointer-events-none" />
+                  <input
+                    type="password"
+                    autoFocus
+                    required
+                    value={adminPasscode}
+                    onChange={e => {
+                      setAdminPasscode(e.target.value);
+                      setAdminPasscodeError(false);
+                    }}
+                    placeholder={lang === 'en' ? 'Enter owner passcode...' : 'Masukkan kode pemilik...'}
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--icon-bg)] border text-xs text-[var(--text)] placeholder-[var(--text-muted)]/50 focus:outline-none transition-all ${
+                      adminPasscodeError ? 'border-rose-500' : 'border-[var(--border)] focus:border-[var(--accent)]'
+                    }`}
+                  />
+                </div>
+                {adminPasscodeError && (
+                  <p className="text-[10px] text-rose-500 mt-1">
+                    {lang === 'en' ? 'Incorrect passcode.' : 'Kode keamanan salah.'}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAdminLoginModal(false)}
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)]"
+                >
+                  {lang === 'en' ? 'Cancel' : 'Batal'}
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-[var(--accent)] text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-all shadow-md"
+                >
+                  {lang === 'en' ? 'Unlock' : 'Buka Akses'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* SPACIOUS & ELEGANT REVIEW MODAL (Wider, Roomy, Premium UX) */}
       {isModalOpen && (

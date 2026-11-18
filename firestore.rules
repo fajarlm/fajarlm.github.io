@@ -79,7 +79,7 @@ service cloud.firestore {
     // Collection Rules
     // ===============================================================
 
-    // Reviews collection: public viewing, validated creation, immutable against updates and deletions
+    // Reviews collection: public viewing, validated creation, immutable updates, deletion allowed
     match /reviews/{reviewId} {
       // Anyone can read reviews
       allow read: if true;
@@ -87,8 +87,11 @@ service cloud.firestore {
       // Anyone can submit a review with strict schema validation
       allow create: if isValidReview(request.resource.data);
 
-      // Deny tampering or deleting existing reviews to protect integrity
-      allow update, delete: if false;
+      // Keep reviews immutable against editing
+      allow update: if false;
+
+      // Allow review deletion
+      allow delete: if true;
     }
 
     // Default catch-all: deny all reads and writes on any unspecified path

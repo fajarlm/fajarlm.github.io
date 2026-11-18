@@ -3,6 +3,8 @@ import {
   addDoc, 
   onSnapshot, 
   getDocs,
+  deleteDoc,
+  doc,
   query, 
   orderBy, 
   serverTimestamp,
@@ -12,6 +14,58 @@ import { db, isFirebaseConfigured } from '../lib/firebase';
 import type { Review } from '../types';
 
 const LOCAL_STORAGE_KEY = 'fajar_portfolio_reviews';
+const AUTHORED_STORAGE_KEY = 'fajar_portfolio_my_authored_reviews';
+
+/**
+ * Get IDs of reviews authored by the current user on this device
+ */
+export const getMyAuthoredReviewIds = (): string[] => {
+  try {
+    const saved = localStorage.getItem(AUTHORED_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (err) {
+    console.error('Error reading authored review ids:', err);
+  }
+  return [];
+};
+
+/**
+ * Record a review ID as authored by current user
+ */
+export const addAuthoredReviewId = (id: string): void => {
+  try {
+    const current = getMyAuthoredReviewIds();
+    if (!current.includes(id)) {
+      const updated = [id, ...current];
+      localStorage.setItem(AUTHORED_STORAGE_KEY, JSON.stringify(updated));
+    }
+  } catch (err) {
+    console.error('Error adding authored review id:', err);
+  }
+};
+
+/**
+ * Remove a review ID from authored list
+ */
+export const removeAuthoredReviewId = (id: string): void => {
+  try {
+    const current = getMyAuthoredReviewIds();
+    const updated = current.filter(item => item !== id);
+    localStorage.setItem(AUTHORED_STORAGE_KEY, JSON.stringify(updated));
+  } catch (err) {
+    console.error('Error removing authored review id:', err);
+  }
+};
+
+/**
+ * Check if a review was authored by current user
+ */
+export const isMyReview = (id: string): boolean => {
+  return getMyAuthoredReviewIds().includes(id);
+};
 
 /**
  * Get cached reviews from localStorage
@@ -179,5 +233,31 @@ export const submitReview = async (reviewInput: {
     setCachedReviews(updated);
   }
 
+  // Record this ID as authored by this device
+  addAuthoredReviewId(newReview.id);
+
   return newReview;
+};
+
+/**
+ * Delete a review (by author or admin/owner)
+ */
+export const deleteReview = async (reviewId: string): Promise<boolean> => {
+  try {
+    if (isFirebaseConfigured() && db) {
+      const docRef = doc(db, 'reviews', reviewId);
+      await deleteDoc(docRef);
+    }
+
+    // Always update local cache
+    const cached = getCachedReviews();
+    const updated = cached.filter(r => r.id !== reviewId);
+    setCachedReviews(updated);
+    removeAuthoredReviewId(reviewId);
+
+    return true;
+  } catch (err) {
+    console.error('[Firebase Firestore] Error deleting review:', err);
+    throw err;
+  }
 };
