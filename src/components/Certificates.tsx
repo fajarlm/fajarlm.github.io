@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { certificatesData, translations } from '../data/portfolioData';
 import { Award, X, FileText, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import AOS from 'aos';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import type { Language } from '../types';
 
 interface CertificatesProps {
@@ -14,6 +15,9 @@ const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
   const [animDir, setAnimDir] = useState('fade-up');
   const itemsPerPage = 6;
   const t = translations[lang].certificates;
+
+  // Lock body scroll and pause Lenis while credential preview modal is open
+  useBodyScrollLock(selectedFile !== null);
 
   const isPDF = (url: string) => url.toLowerCase().endsWith('.pdf');
 
@@ -107,6 +111,7 @@ const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
       {selectedFile && (
         <div 
           onClick={() => setSelectedFile(null)}
+          data-lenis-prevent
           className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-black/50 backdrop-blur-md animate-in fade-in duration-300"
         >
           <div className="absolute top-0 w-full flex justify-between items-center p-8 z-30">
@@ -122,7 +127,7 @@ const Certificates: React.FC<CertificatesProps> = ({ lang }) => {
             </button>
           </div>
           
-          <div className="w-full h-full max-w-6xl p-6 md:p-20 flex items-center justify-center" onClick={e => e.stopPropagation()}>
+          <div data-lenis-prevent className="w-full h-full max-w-6xl p-6 md:p-20 flex items-center justify-center" onClick={e => e.stopPropagation()}>
             {isPDF(selectedFile) ? (
               <iframe 
                 src={selectedFile} 

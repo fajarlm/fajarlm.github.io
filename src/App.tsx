@@ -43,6 +43,7 @@ export default function App() {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
+    (window as unknown as { __lenis?: unknown }).__lenis = lenis;
 
     function raf(time: number) {
       lenis.raf(time);
@@ -56,6 +57,7 @@ export default function App() {
     return () => {
       cancelAnimationFrame(rafId);
       lenis.destroy();
+      (window as unknown as { __lenis?: unknown }).__lenis = undefined;
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);

@@ -30,6 +30,7 @@ import {
   deleteReview,
   isMyReview 
 } from '../services/reviewService';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import type { Language, Review } from '../types';
 
 interface ReviewsProps {
@@ -102,6 +103,9 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
   // Delete confirmation state
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Lock body scroll whenever any review modal is active
+  useBodyScrollLock(isModalOpen || reviewToDelete !== null || showAdminLoginModal);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -621,10 +625,12 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
       {/* DELETE CONFIRMATION MODAL */}
       {reviewToDelete && (
         <div 
+          data-lenis-prevent
           className="fixed inset-0 z-[280] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
           onClick={() => !isDeleting && setReviewToDelete(null)}
         >
           <div 
+            data-lenis-prevent
             className="w-full max-w-md rounded-3xl p-6 sm:p-7 bg-[var(--card)] text-[var(--text)] border border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150 space-y-4"
             onClick={e => e.stopPropagation()}
           >
@@ -682,10 +688,12 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
       {/* OWNER / ADMIN PASSCODE MODAL */}
       {showAdminLoginModal && (
         <div 
+          data-lenis-prevent
           className="fixed inset-0 z-[280] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
           onClick={() => setShowAdminLoginModal(false)}
         >
           <div 
+            data-lenis-prevent
             className="w-full max-w-sm rounded-3xl p-6 sm:p-7 bg-[var(--card)] text-[var(--text)] border border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150 space-y-4"
             onClick={e => e.stopPropagation()}
           >
@@ -765,10 +773,12 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
       {/* SPACIOUS & ELEGANT REVIEW MODAL (Wider, Roomy, Premium UX) */}
       {isModalOpen && (
         <div 
+          data-lenis-prevent
           className="fixed inset-0 z-[250] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/75 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
           onClick={() => setIsModalOpen(false)}
         >
           <div 
+            data-lenis-prevent
             className="w-full max-w-2xl lg:max-w-3xl my-auto rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl border border-[var(--border)] relative bg-[var(--card)] text-[var(--text)] overflow-hidden animate-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col"
             onClick={e => e.stopPropagation()}
           >
@@ -805,7 +815,7 @@ const Reviews: React.FC<ReviewsProps> = ({ lang }) => {
             )}
 
             {/* Form with Spacious, Roomy Spacing */}
-            <form id="reviewForm" onSubmit={handleSubmit} className="flex-1 overflow-y-auto pr-1 space-y-5 [scrollbar-width:thin] [scrollbar-color:var(--accent)_transparent]">
+            <form id="reviewForm" onSubmit={handleSubmit} data-lenis-prevent className="flex-1 overflow-y-auto pr-1 space-y-5 [scrollbar-width:thin] [scrollbar-color:var(--accent)_transparent]">
               {/* Row 1: Full Name */}
               <div>
                 <div className="flex justify-between items-center mb-1.5">

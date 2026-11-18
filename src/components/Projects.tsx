@@ -23,6 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SpotlightCard from './ui/SpotlightCard';
 import MagneticButton from './ui/MagneticButton';
 import AOS from 'aos';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import type { Language, Project } from '../types';
 
 interface ProjectsProps {
@@ -39,6 +40,9 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
   const [activeMediaTab, setActiveMediaTab] = useState<'video' | 'gallery'>('video');
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
+
+  // Lock body scroll and pause Lenis while project detail modal is open
+  useBodyScrollLock(selectedProject !== null);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
@@ -466,10 +470,10 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
           <div 
             onClick={e => e.stopPropagation()}
             data-lenis-prevent
-            className="relative w-full max-w-5xl max-h-[94vh] lg:h-[88vh] flex flex-col rounded-[2rem] md:rounded-[2.5rem] bg-[var(--card)] text-[var(--text)] border border-[var(--border)] shadow-[0_25px_70px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-200"
+            className="relative w-full max-w-5xl max-h-[92vh] lg:h-[88vh] flex flex-col rounded-[2rem] md:rounded-[2.5rem] bg-[var(--card)] text-[var(--text)] border border-[var(--border)] shadow-[0_25px_70px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-200"
           >
             {/* Modal Top Bar: Fixed at top */}
-            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-b border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-md z-30 flex-shrink-0">
+            <div className="flex items-center justify-between px-6 py-3.5 md:px-8 border-b border-[var(--border)] bg-[var(--card)] z-30 flex-shrink-0">
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-mono font-bold tracking-widest text-[var(--text-muted)] uppercase">
                   {currentProjectIndex + 1 < 10 ? `0${currentProjectIndex + 1}` : currentProjectIndex + 1} / {filteredProjects.length < 10 ? `0${filteredProjects.length}` : filteredProjects.length}
@@ -482,7 +486,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
 
               <button 
                 onClick={() => setSelectedProject(null)}
-                className="p-2.5 rounded-full bg-[var(--icon-bg)] hover:bg-[var(--text)] hover:text-[var(--bg)] text-[var(--text)] transition-all hover:rotate-90"
+                className="p-2 rounded-full bg-[var(--icon-bg)] hover:bg-[var(--text)] hover:text-[var(--bg)] text-[var(--text)] transition-all hover:rotate-90"
                 title={t.closeModal || 'Tutup'}
               >
                 <X size={18} />
@@ -490,17 +494,17 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
             </div>
 
             {/* Modal Body: Left column is FIXED/STATIC, Right column is ONLY scrollable */}
-            <div data-lenis-prevent className="flex-1 overflow-y-auto lg:overflow-hidden p-6 md:p-8 min-h-0">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start lg:h-full lg:min-h-0">
+            <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto lg:overflow-hidden p-5 md:px-8 md:py-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 lg:h-full lg:min-h-0">
                 
                 {/* Left Column: Media Player / Video Showcase (FIXED, NON-SCROLLABLE) */}
-                <div className="lg:col-span-7 flex flex-col space-y-4 lg:sticky lg:top-0 select-none flex-shrink-0">
+                <div className="lg:col-span-7 flex flex-col space-y-3.5 self-start select-none flex-shrink-0">
                   {/* Media Tab Selector: Using 'Video Demo' and 'Foto/Images' */}
                   {selectedProject.video && selectedProject.gallery && selectedProject.gallery.length > 0 && (
                     <div className="inline-flex p-1 rounded-2xl bg-[var(--icon-bg)] border border-[var(--border)] backdrop-blur-md w-fit">
                       <button
                         onClick={() => setActiveMediaTab('video')}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${
+                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${
                           activeMediaTab === 'video'
                             ? 'bg-[var(--text)] text-[var(--bg)] shadow-md'
                             : 'text-[var(--text-muted)] hover:text-[var(--text)]'
@@ -510,7 +514,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                       </button>
                       <button
                         onClick={() => setActiveMediaTab('gallery')}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${
+                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${
                           activeMediaTab === 'gallery'
                             ? 'bg-[var(--text)] text-[var(--bg)] shadow-md'
                             : 'text-[var(--text-muted)] hover:text-[var(--text)]'
@@ -525,7 +529,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                   {selectedProject.video && activeMediaTab === 'video' ? (
                     <div className="relative rounded-2xl overflow-hidden bg-black border border-[var(--border)] shadow-2xl group flex flex-col">
                       {/* Browser Mockup Chrome Header */}
-                      <div className="flex items-center justify-between px-4 py-2.5 bg-black/85 border-b border-white/10 text-white/60 text-[10px]">
+                      <div className="flex items-center justify-between px-4 py-2 bg-black/85 border-b border-white/10 text-white/60 text-[10px]">
                         <div className="flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
                           <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
@@ -534,7 +538,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                         <span className="font-mono text-[9px] tracking-widest text-zinc-300 truncate max-w-[200px]">
                           {selectedProject.demo ? new URL(selectedProject.demo).hostname : `${selectedProject.title.toLowerCase()}.local`}
                         </span>
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/15 px-3 py-1 rounded-full border border-purple-500/30">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/15 px-2.5 py-0.5 rounded-full border border-purple-500/30">
                           App Testing Demo
                         </span>
                       </div>
@@ -554,7 +558,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                       </div>
 
                       {/* Audio & Sound Status Bar */}
-                      <div className="flex items-center justify-between px-4 py-2.5 bg-[var(--icon-bg)] border-t border-[var(--border)] text-[11px] text-[var(--text)]">
+                      <div className="flex items-center justify-between px-4 py-2 bg-[var(--icon-bg)] border-t border-[var(--border)] text-[11px] text-[var(--text)]">
                         <div className="flex items-center gap-2">
                           <Volume2 size={14} className="text-purple-500 animate-pulse flex-shrink-0" />
                           <span className="font-medium text-[11px] text-[var(--text)]">
@@ -580,14 +584,14 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                     </div>
                   ) : (
                     /* Image / Foto Gallery Viewer */
-                    <div className="flex flex-col space-y-3">
+                    <div className="flex flex-col space-y-2.5">
                       {(() => {
                         const galleryList = [selectedProject.img, ...(selectedProject.gallery || [])];
                         return (
                           <>
                             <div className="relative rounded-2xl overflow-hidden bg-black border border-[var(--border)] shadow-2xl">
                               {/* Browser Mockup Chrome Header */}
-                              <div className="flex items-center justify-between px-4 py-2.5 bg-black/85 border-b border-white/10 text-white/60 text-[10px]">
+                              <div className="flex items-center justify-between px-4 py-2 bg-black/85 border-b border-white/10 text-white/60 text-[10px]">
                                 <div className="flex items-center gap-1.5">
                                   <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
                                   <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
@@ -596,7 +600,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                                 <span className="font-mono text-[9px] tracking-widest text-zinc-300">
                                   {t.screenshots} {activeGalleryIndex + 1} / {galleryList.length}
                                 </span>
-                                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-300">
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-300 truncate max-w-[180px]">
                                   {selectedProject.title}
                                 </span>
                               </div>
@@ -616,7 +620,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                                   <button
                                     key={idx}
                                     onClick={() => setActiveGalleryIndex(idx)}
-                                    className={`relative w-20 h-12 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
+                                    className={`relative w-16 h-10 md:w-20 md:h-12 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
                                       activeGalleryIndex === idx
                                         ? 'border-[var(--accent)] scale-105 shadow-lg'
                                         : 'border-[var(--border)] opacity-60 hover:opacity-100'
@@ -637,10 +641,10 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                 {/* Right Column: Project Metadata, Highlights & CTAs (INDEPENDENTLY SCROLLABLE ONLY) */}
                 <div 
                   data-lenis-prevent 
-                  className="lg:col-span-5 flex flex-col space-y-6 lg:overflow-y-auto lg:h-full lg:max-h-[calc(88vh-140px)] pr-3 sm:pr-4 pb-16 [scrollbar-width:thin] [scrollbar-color:var(--accent)_rgba(128,128,128,0.2)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black/10 dark:[&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--accent)] [&::-webkit-scrollbar-thumb]:rounded-full"
+                  className="lg:col-span-5 flex flex-col space-y-5 lg:h-full lg:min-h-0 lg:overflow-y-auto pr-3 sm:pr-4 pb-8 [scrollbar-width:thin] [scrollbar-color:var(--accent)_rgba(128,128,128,0.2)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black/10 dark:[&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--accent)] [&::-webkit-scrollbar-thumb]:rounded-full"
                 >
                   <div>
-                    <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-3 text-[var(--text)]">
+                    <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-2.5 text-[var(--text)]">
                       {selectedProject.title}
                     </h3>
                     <p className="text-xs md:text-sm text-[var(--text)]/85 dark:text-zinc-200 leading-relaxed font-normal">
@@ -650,11 +654,11 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
 
                   {/* Highlights / Keunggulan Utama */}
                   {selectedProject.highlights && selectedProject.highlights[lang] && (
-                    <div className="p-5 md:p-6 rounded-2xl bg-[var(--icon-bg)]/80 border border-[var(--border)] space-y-3.5 shadow-xs">
+                    <div className="p-4 md:p-5 rounded-2xl bg-[var(--icon-bg)]/80 border border-[var(--border)] space-y-3 shadow-xs">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text)] flex items-center gap-2">
                         <Sparkles size={14} className="text-[var(--accent)]" /> {t.keyHighlights}
                       </p>
-                      <ul className="space-y-2.5">
+                      <ul className="space-y-2">
                         {selectedProject.highlights[lang].map((point, idx) => (
                           <li key={idx} className="text-xs md:text-[13px] leading-relaxed text-[var(--text)] font-normal flex items-start gap-2.5">
                             <CheckCircle2 size={14} className="text-emerald-500 mt-0.5 flex-shrink-0" />
@@ -667,14 +671,14 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
 
                   {/* Tech Stack Pills */}
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2.5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">
                       Technologies
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {selectedProject.tech.map((techName, idx) => (
                         <span 
                           key={idx}
-                          className="px-3.5 py-1.5 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] text-[11px] font-semibold tracking-wide border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
+                          className="px-3 py-1 rounded-xl bg-[var(--icon-bg)] text-[var(--text)] text-[11px] font-semibold tracking-wide border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
                         >
                           {techName}
                         </span>
@@ -683,7 +687,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
                   </div>
 
                   {/* Action Link Buttons with Magnetic Motion */}
-                  <div className="pt-3 pb-6 flex flex-wrap gap-2.5">
+                  <div className="pt-2 pb-4 flex flex-wrap gap-2.5">
                     {selectedProject.demo && (
                       <MagneticButton className="flex-1 min-w-[120px]">
                         <a
@@ -728,7 +732,7 @@ const Projects: React.FC<ProjectsProps> = ({ lang }) => {
             </div>
 
             {/* Modal Bottom Navigation Bar (Prev / Next Project) */}
-            <div className="flex items-center justify-between px-6 py-4 md:px-8 border-t border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-md flex-shrink-0">
+            <div className="flex items-center justify-between px-6 py-3.5 md:px-8 border-t border-[var(--border)] bg-[var(--card)] z-30 flex-shrink-0">
               <button
                 type="button"
                 onClick={handlePrevProject}
